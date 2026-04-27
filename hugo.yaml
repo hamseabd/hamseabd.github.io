@@ -1,0 +1,87 @@
+baseURL: "https://hamseabd.github.io/"
+title: "Hamse Abdi"
+theme: "PaperMod"
+languageCode: "en-us"
+
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  env: production
+  title: "Hamse Abdi"
+  description: "Building production AI agents on AWS. Architecture, evals, observability, cost."
+  keywords: ["AI engineer", "agentic systems", "LLM", "AWS", "evals", "production AI"]
+  author: "Hamse Abdi"
+  defaultTheme: auto
+  disableThemeToggle: false
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  comments: false
+
+  homeInfoParams:
+    Title: "Hamse Abdi"
+    Content: >
+      I'm a software engineer building production AI agents.
+
+      I run three deployed agentic systems on AWS — an SMS productivity coach, a proactive Telegram health bot, and a market intelligence platform.
+
+      Here I write about what it actually takes to ship and run agents in production: architecture and tradeoffs, eval strategies that catch real bugs, observability for tool-using systems, and how I keep three deployed agents running on $1–3/month.
+
+      For hiring managers and engineers who care about real production AI systems, not demos.
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/hamseabd"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/hamseabdi/"
+    - name: rss
+      url: "/index.xml"
+
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content"]
+
+menu:
+  main:
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 10
+    - identifier: about
+      name: About
+      url: /about/
+      weight: 20
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 30
+
+pygmentsUseClasses: true
+markup:
+  highlight:
+    noClasses: false
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
