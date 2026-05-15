@@ -1,62 +1,87 @@
 ---
-title: "I built three production AI agents on AWS. Here's what I'm doing next."
-date: 2026-04-27
-draft: true
-tags: ["agents", "aws", "production", "career"]
-summary: "An SMS productivity coach, a proactive Telegram health bot, and a market intelligence platform. None of them used to have eval suites in CI. Here's why that's about to change — and what I'll publish along the way."
+title: "I built my own support staff. Three AI agents, deployed."
+date: 2026-05-13
+draft: false
+tags: ["agents", "aws", "production", "evals"]
+summary: "I needed a Scrum master, a health coach, and a market analyst. Instead of paying for them, I built them. Here's what I built, what's broken, and what I'm fixing next."
 ShowToc: false
 ShowReadingTime: true
 ---
 
-> *Draft — replace with your real intro before publishing. The structure below is a starting scaffold per the pivot plan's "post #0" deliverable. Aim for 700–900 words, conversational tone, written like you're explaining to a peer engineer over coffee.*
+I work a full-time engineering job and run side projects, track my health, and trade my own stock portfolio. At some point I realized I was doing all of it without any support staff.
 
-## What I've built
+Most people in that situation buy subscriptions. I'm an engineer, so I built agents instead.
 
-Over the past year, I built three production AI agents on AWS while working full-time as a software engineer. All three are deployed, tested, observable, and run on $1–3/month total.
+All three are running in production. I use them every day.
 
-**Stride** is an SMS productivity coach. Text it your goals, check in daily, get a weekly review. The Scrum framework runs entirely under the hood; users see only plain language. Built on the [Strands Agents SDK](https://strandsagents.com) with Claude Sonnet, 19 tools, full A2P 10DLC compliance, single-table DynamoDB design with 14 entity types. 104 tests.
+## Stride — my personal Scrum master
 
-**Maxy** is a Telegram health and accountability bot. Unlike most agents, it's *proactive* — 9 EventBridge schedules drive check-ins throughout the day instead of waiting for the user. Bedrock + Strands, knowledge-base-grounded AI assistant, peptide cycle date math, intro-stage dose escalation logic. 7 test files.
+At work, I finish what I commit to. Someone checks what I said I'd do, notices when I'm overloaded, and helps me adjust. Accountability is just part of the system.
 
-**Stock Intel** is a Telegram market intelligence platform — like Unusual Whales, but mine, for $3/month. 27 commands across portfolio, research, intelligence, and AI analysis. 8 automated scanners (price thresholds, options flow, congressional trades, dark pool, technicals, earnings, news). 286 tests.
+My side projects? They die. I start strong, miss a few days, and quietly move on. I've tried the apps, the planners, the systems. The problem was never the tool — it was that nothing followed up.
 
-Three production systems, three different stacks, three different problems.
+So I built Stride. It texts me Monday to plan my week and break my goals down into tasks. It texts me every morning with what I said I'd do. It checks in at night. On Fridays, it shows me what I actually finished versus what I planned. And after a few weeks, it started pointing out things I couldn't see myself — like how I overcommit every Monday and underestimate anything that involves writing.
+
+No app. No dashboard. Just something in my texts that knows my patterns better than I do.
+
+Building it forced an architectural decision I'd make again on anything that uses LLMs at scale.
+
+The decision I'm most pleased with: Stride uses two models. Claude Sonnet handles the full agent loop — 19 tools, multi-step reasoning, DynamoDB reads and writes across 14 entity types in a single-table design. Claude Haiku handles intent classification only, figuring out whether an incoming message is a check-in, a blocker, or something else. Haiku is 25x cheaper than Sonnet and intent detection doesn't need reasoning — just pattern matching. That one distinction keeps the cost at $1/month while keeping the quality where it needs to be.
+
+256 tests. A2P 10DLC SMS compliance. Full Powertools observability.
+
+## Maxy — my health and accountability bot
+
+Tracking health feels easy until you're doing it seriously. When you're managing training, nutrition, water, sleep, and supplements at the same time, you're not forgetting because you're lazy — you're forgetting because there are too many things to remember.
+
+I'd log breakfast and forget water. Hit my workout and forget to log protein. Go to bed and realize I couldn't remember if I'd taken my supplements or just thought about taking them.
+
+So I built Maxy. It doesn't wait for me to open an app. It messages me — morning check-in, water reminders through the day, caffeine cutoff at 2pm, gym check-in at 5pm, bedtime checklist. I just reply. Maxy logs it, tracks it against my targets, and tells me where I'm falling short before the day is over.
+
+The difference between a good week and a bad one stopped being motivation. It became whether I replied to my texts.
+
+Building it raised a question I hadn't thought through: how much should the AI know, and how do you stop it from making things up?
+
+The non-obvious piece: the AI assistant is grounded entirely in locked research docs — markdown files covering training, nutrition, supplements, sleep — loaded into the system prompt at boot. Maxy cannot answer outside that knowledge base. For a health bot, that constraint is the feature. I don't want a hallucinated answer about recovery protocols; I want the answer I wrote down when I did the research.
+
+89 tests. 14 Strands tools. $0/month — runs entirely within the AWS free tier.
+
+## Stock Intel — my market intelligence platform
+
+Following the markets when you have a real job means you're always catching up. I remember sitting in a meeting while one of my positions moved 8% and finding out two hours later. By then it was priced in and the moment was gone.
+
+I looked at Unusual Whales. It does most of what I wanted. But it's $99/month, it shows me everything, and I still had to do the thinking myself.
+
+So I built Stock Intel. It watches my portfolio, tracks the stocks I care about, and runs eight scanners — options flow, dark pool, congressional trades, technical signals, earnings, breaking news. When something worth knowing happens, it messages me on Telegram. I don't open it unless it does.
+
+The goal was never more information. It was only the right information, already filtered, already on my phone.
+
+That constraint shaped every architectural decision.
+
+The architectural decision that mattered most: 22 of the 27 commands never touch Claude at all. They're pure Python — fast, free, deterministic. Only 5 commands route to the AI, and those first gather all the data with code, then send a compact summary for Claude to reason over. That's roughly $0.02 per AI command. Every command in the codebase is annotated "Direct ($0)" or "AI (~$0.02)." Cost discipline has to be built into the architecture, not bolted on later.
+
+376 tests. $3/month total including Claude API, versus $99/month for the commercial alternative.
 
 ## What I'm not happy with
 
-None of them have eval suites in CI.
+None of them have eval suites in CI. Most production AI systems have the same problem — we ship fast, the code works, and the eval infrastructure gets deferred until something breaks in front of a user.
 
-That's the gap a senior AI engineer notices first. Unit tests are necessary but not sufficient for systems where the output is *generated*, not computed. A regression in tool selection, a prompt that loses context after a refactor, an LLM that quietly hallucinates a tool argument — none of these get caught by `pytest tests/`. They show up in production, when a user hits the same bad path the second time.
+That's the gap a senior AI engineer notices first. Unit tests pass. The agent still hallucinates a tool argument on an edge case, or loses context after a prompt refactor, or selects the wrong tool when two are plausible. None of that surfaces in pytest. It surfaces in production, the second time a user hits the same bad path.
 
-Observability is also uneven. Stride has Powertools and X-Ray. Maxy uses stdlib `logging`. Stock Intel has a logger module but no SLO on its 8 scheduled scanners — they could be silently failing for days.
+Stride once routed an update to the wrong project because a user mentioned an old one in passing. The test suite didn't catch it. A user did.
 
-Tool design is good but not great. Pydantic validators on inputs are inconsistent. Retries with backoff are missing on some external HTTP calls. Error envelopes that the agent can recover from aren't standardized.
+Observability is also uneven. Stride has Powertools and X-Ray. Maxy uses stdlib logging. Stock Intel has a logger module but no SLO on its 8 automated scanners — they could fail silently for days before I'd notice.
 
 This is what "works in production" looks like when one engineer ships fast. It's also what "doesn't pass a senior bar" looks like.
 
 ## What I'm doing next
 
-Over the next five weeks, I'm reworking all three from "deployed" to "interview-grade." Specifically:
+This series is part of a deliberate move into a senior AI engineer role. I'm not waiting until the work is perfect — I'm publishing the rework as it happens, because the thinking is the artifact.
 
-1. **Eval suites in CI for each app.** Pytest + LLM-as-judge with explicit rubrics, regression cases for past bugs, deterministic tool-call assertions. Blocks merge on regression. No SaaS — owning the primitives is the senior signal.
-2. **Observability you can demo.** Powertools across all three, correlation IDs through tool calls, X-Ray subsegments, custom metrics for latency, tool error rate, eval pass rate, and cost-per-conversation.
-3. **Hardened tool design.** Pydantic on every tool input, retries with backoff, structured error envelopes the agent can recover from, parallel tool calls where they make sense.
-4. **Public READMEs that read like a senior engineer wrote them.** Design tradeoffs, failure modes considered, eval results, real cost numbers.
+I'm reworking all three from deployed to interview-grade. Eval suites in CI — LLM-as-judge rubrics, deterministic tool-call assertions, regression cases for past bugs. Powertools and X-Ray across all three. Pydantic on every tool input, retries with backoff, error envelopes the agent can recover from.
 
-And I'm publishing as I go. Roughly weekly, here, on the deeper technical posts:
+I'm publishing weekly on the specifics — what the eval setup looks like, what broke when I added it, what the real observability numbers look like in practice. If you're building AI agents and want to follow along, this is the work.
 
-- *Adding real evals to a production SMS agent: 30 cases, what broke, what got better*
-- *Three production AI agents, three eval strategies: SMS, scheduled, and command-driven*
-- *Why my three production agents cost $1–3/month: cost optimization patterns from running them solo*
+Next up: Stride's eval suite. I wrote the full design before touching any code — 12 deterministic assertions, 7 LLM-as-judge rubrics, a calibration protocol for keeping evals honest over time. That post is next week.
 
-After that, I'll be looking for a senior AI engineer role at a Big Tech AI org or a mature AI-native company — somewhere I can grow, learn, and ship the kind of work I'm doing now at scale.
-
-## Why publish at all
-
-Most engineers don't write. The ones who do compound credibility while they sleep. A blog post is also the cheapest way to find out whether your story actually lands — if a stranger with no context can read it and care, the story is real. If they can't, the story isn't real yet.
-
-I'd rather write five honest posts that 50 right people read than thirty posts that nobody finishes.
-
-If any of this resonates — particularly if you're hiring for the kind of role I described, or you've reworked your own production agents and have lessons I should steal — I'd love to hear from you. Find me at [github.com/hamseabd](https://github.com/hamseabd) or [linkedin.com/in/hamseabdi](https://www.linkedin.com/in/hamseabdi/).
-
-More soon.
+If you're building a team that ships this kind of work, or you've been through your own production agent rework and have lessons worth sharing, I'd like to hear from you. [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).
