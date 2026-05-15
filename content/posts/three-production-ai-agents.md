@@ -64,23 +64,23 @@ The architectural decision that mattered most: 22 of the 27 commands never touch
 
 ## What I'm not happy with
 
-None of them have eval suites in CI. Most production AI systems have the same problem — we ship fast, the code works, and the eval infrastructure gets deferred until something breaks in front of a user.
+I know what these systems are missing.
 
-That's the gap a senior AI engineer notices first. Unit tests pass. The agent still hallucinates a tool argument on an edge case, or loses context after a prompt refactor, or selects the wrong tool when two are plausible. None of that surfaces in pytest. It surfaces in production, the second time a user hits the same bad path.
+I built them fast anyway. Deployed and imperfect beats perfect and sitting in a branch — but there's a point where fast becomes debt.
 
-Stride once routed an update to the wrong project because a user mentioned an old one in passing. The test suite didn't catch it. A user did.
+None of them have eval suites in CI. Unit tests tell you the code ran. They say nothing about whether the agent reasoned correctly — and those are different problems. Stride once routed an update to the wrong project because a user mentioned an old one in passing. The test suite didn't catch it. A user did. That's the kind of failure that only surfaces the second time someone hits the same bad path.
 
 Observability is also uneven. Stride has Powertools and X-Ray. Maxy uses stdlib logging. Stock Intel has a logger module but no SLO on its 8 automated scanners — they could fail silently for days before I'd notice.
 
-This is what "works in production" looks like when one engineer ships fast. It's also what "doesn't pass a senior bar" looks like.
+This is what "works in production" looks like when one engineer ships fast. It's also what I'm fixing.
 
 ## What I'm doing next
 
-This series is part of a deliberate move into a senior AI engineer role. I'm not waiting until the work is perfect — I'm publishing the rework as it happens, because the thinking is the artifact.
+Writing about what you've built forces you to see what's actually wrong with it. That's part of why I'm publishing this.
 
-I'm reworking all three from deployed to interview-grade. Eval suites in CI — LLM-as-judge rubrics, deterministic tool-call assertions, regression cases for past bugs. Powertools and X-Ray across all three. Pydantic on every tool input, retries with backoff, error envelopes the agent can recover from.
+I'm reworking all three from deployed to properly done. Eval suites in CI — LLM-as-judge rubrics, deterministic tool-call assertions, regression cases for past bugs. Powertools and X-Ray across all three. Pydantic on every tool input, retries with backoff, error envelopes the agent can recover from.
 
-I'm publishing weekly on the specifics — what the eval setup looks like, what broke when I added it, what the real observability numbers look like in practice. If you're building AI agents and want to follow along, this is the work.
+I'm publishing weekly on the specifics — what the eval setup looks like, what broke when I added it, what the real numbers look like in practice.
 
 Next up: Stride's eval suite. I wrote the full design before touching any code — 12 deterministic assertions, 7 LLM-as-judge rubrics, a calibration protocol for keeping evals honest over time. That post is next week.
 
