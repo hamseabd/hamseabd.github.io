@@ -30,19 +30,19 @@ The decision I'm most pleased with: Stride uses two models. Claude Sonnet handle
 
 256 tests. A2P 10DLC SMS compliance. Full Powertools observability.
 
-## Maxy — my health and accountability bot
+## Apex — my health and accountability bot
 
 Tracking health feels easy until you're doing it seriously. When you're managing training, nutrition, water, sleep, and supplements at the same time, you're not forgetting because you're lazy — you're forgetting because there are too many things to remember.
 
 I'd log breakfast and forget water. Hit my workout and forget to log protein. Go to bed and realize I couldn't remember if I'd taken my supplements or just thought about taking them.
 
-So I built Maxy. It doesn't wait for me to open an app. It messages me — morning check-in, water reminders through the day, caffeine cutoff at 2pm, gym check-in at 5pm, bedtime checklist. I just reply. Maxy logs it, tracks it against my targets, and tells me where I'm falling short before the day is over.
+So I built Apex. It doesn't wait for me to open an app. It messages me — morning check-in, water reminders through the day, caffeine cutoff at 2pm, gym check-in at 5pm, bedtime checklist. I just reply. Apex logs it, tracks it against my targets, and tells me where I'm falling short before the day is over.
 
 The difference between a good week and a bad one stopped being motivation. It became whether I replied to my texts.
 
 Building it raised a question I hadn't thought through: how much should the AI know, and how do you stop it from making things up?
 
-The non-obvious piece: the AI assistant is grounded entirely in locked research docs — markdown files covering training, nutrition, supplements, sleep — loaded into the system prompt at boot. Maxy cannot answer outside that knowledge base. For a health bot, that constraint is the feature. I don't want a hallucinated answer about recovery protocols; I want the answer I wrote down when I did the research.
+The non-obvious piece: the AI assistant is grounded entirely in locked research docs — markdown files covering training, nutrition, supplements, sleep — loaded into the system prompt at boot. Apex cannot answer outside that knowledge base. For a health bot, that constraint is the feature. I don't want a hallucinated answer about recovery protocols; I want the answer I wrote down when I did the research.
 
 89 tests. 14 Strands tools. $0/month — runs entirely within the AWS free tier.
 
@@ -70,7 +70,7 @@ I built them fast anyway. Deployed and imperfect beats perfect and sitting in a 
 
 None of them have eval suites in CI. Unit tests tell you the code ran. They say nothing about whether the agent reasoned correctly — and those are different problems. Stride once routed an update to the wrong project because a user mentioned an old one in passing. The test suite didn't catch it. A user did. That's the kind of failure that only surfaces the second time someone hits the same bad path.
 
-Observability is also uneven. Stride has Powertools and X-Ray. Maxy uses stdlib logging. Stock Intel has a logger module but no SLO on its 8 automated scanners — they could fail silently for days before I'd notice.
+Observability is also uneven. Stride has Powertools and X-Ray. Apex uses stdlib logging. Stock Intel has a logger module but no SLO on its 8 automated scanners — they could fail silently for days before I'd notice.
 
 This is what "works in production" looks like when one engineer ships fast. It's also what I'm fixing.
 
