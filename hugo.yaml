@@ -35,13 +35,15 @@ params:
   homeInfoParams:
     Title: "Hamse Abdi"
     Content: >
-      I'm a software engineer building production AI agents.
+      AI Engineer building production agentic systems on AWS.
 
-      I run three deployed agentic systems on AWS — an SMS productivity coach, a proactive Telegram health bot, and a market intelligence platform.
+      At Travelers, I built a multi-agent underwriting system — reader agent + 11 parallel evaluators on Bedrock via Strands SDK — that replaced a 23-minute manual expert review with citation-backed approve/decline/escalate decisions. An independent LLM-as-judge rated it more accurate than the GPT-4 incumbent on 72% of 109 disagreements (n = 891 evaluations).
 
-      Here I write about what it actually takes to ship and run agents in production: architecture and tradeoffs, eval strategies that catch real bugs, observability for tool-using systems, and how I keep three deployed agents running on $1–3/month.
+      Outside work, I run three deployed agents: Stride (SMS productivity coach), Apex (proactive health accountability bot), and Stock Intel (Telegram market intelligence platform).
 
-      For hiring managers and engineers who care about real production AI systems, not demos.
+      I write about what it takes to ship agents in production: multi-agent architecture, eval strategies that catch real bugs, LLM observability, and keeping three production systems running on $1–3/month.
+
+      For hiring managers and engineers who care about real production AI — not demos.
 
   socialIcons:
     - name: github
