@@ -1,0 +1,307 @@
+{{- define "main" }}
+<style>
+  .about-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 3rem var(--gap);
+  }
+  .about-intro {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--secondary);
+    margin: 0 0 2rem;
+    max-width: 540px;
+  }
+  .about-hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 0 2rem;
+  }
+  /* Travelers */
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.2rem;
+  }
+  .job-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .job-date {
+    font-size: 12px;
+    color: var(--secondary);
+  }
+  .job-meta {
+    font-size: 13px;
+    color: var(--secondary);
+    margin: 0 0 1.1rem;
+  }
+  .job-body {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--content);
+    margin: 0 0 0.9rem;
+  }
+  /* Metrics strip */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 0 0 1.25rem;
+  }
+  .metric {
+    background: var(--entry);
+    padding: 0.85rem 0.6rem;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .metric:last-child { border-right: none; }
+  .metric-num {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+  .metric-label {
+    font-size: 10px;
+    color: var(--secondary);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    margin: 0 0 1.25rem;
+  }
+  /* Project cards */
+  .projects {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .project {
+    background: var(--entry);
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .project:last-child { border-bottom: none; }
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.4rem;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .project-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-right: 8px;
+  }
+  .project-stack {
+    font-size: 12px;
+    font-family: monospace;
+    color: var(--secondary);
+  }
+  .project-cost {
+    font-size: 12px;
+    color: var(--secondary);
+    white-space: nowrap;
+  }
+  .project-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--secondary);
+    margin: 0;
+  }
+  /* Stack */
+  .stack-section { margin-bottom: 2.5rem; }
+  .stack-row {
+    display: flex;
+    gap: 1rem;
+    font-size: 14px;
+    margin-bottom: 0.65rem;
+    line-height: 1.6;
+  }
+  .stack-key {
+    color: var(--secondary);
+    min-width: 110px;
+    flex-shrink: 0;
+  }
+  .stack-val { color: var(--content); }
+  /* Contact */
+  .contact-row {
+    display: flex;
+    gap: 1rem;
+    font-size: 14px;
+    margin-bottom: 0.5rem;
+    align-items: center;
+  }
+  .contact-key {
+    color: var(--secondary);
+    min-width: 80px;
+  }
+  .contact-val { color: var(--primary); }
+  .contact-val a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+  .contact-val a:hover { text-decoration: underline; }
+  @media (max-width: 500px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .metric:nth-child(2) { border-right: none; }
+    .metric:nth-child(1),
+    .metric:nth-child(2) { border-bottom: 1px solid var(--border); }
+  }
+</style>
+
+<div class="about-wrap">
+
+  <p class="about-intro">
+    I'm Hamse — an AI engineer with five years of production experience. I specialize in agentic systems, LLM evaluation, and multi-agent orchestration on AWS. Currently at Travelers building AI underwriting systems, and running three deployed agents of my own.
+  </p>
+
+  <hr class="about-hr">
+
+  <!-- Travelers -->
+  <div style="margin-bottom: 2.5rem;">
+    <div class="job-header">
+      <span class="job-name">Travelers</span>
+      <span class="job-date">2021 – present</span>
+    </div>
+    <p class="job-meta">Software Engineer — AI Systems · Atlanta, GA</p>
+
+    <p class="job-body">
+      I've driven the underwriting AI system through two generations. First: a GenAI workbench that cut case review from 6 hours to 30 minutes by summarizing hundreds of claim notes and unifying policy data, claim history, photos, and geolocation into a single decision view.
+    </p>
+    <p class="job-body">
+      Then: a fully agentic system — a reader agent feeding a panel of parallel, rubric-driven evaluator agents — that automatically renews clear-cut policies and escalates the rest with cited, reason-coded referrals. Built on MCP tools for on-the-fly data retrieval, a Step Functions + Lambda orchestrator that preloads context and refreshes large policy PDFs into structured MongoDB records, and prompts, skills, and output rules externalized in S3 so agent behavior is tuned through config, not code changes.
+    </p>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-num">90%</div>
+        <div class="metric-label">time saved for<br>underwriters</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">6h → 30m</div>
+        <div class="metric-label">Gen 1: GenAI<br>workbench</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">→ 5m</div>
+        <div class="metric-label">Gen 2: agentic<br>referral cases</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">11</div>
+        <div class="metric-label">parallel evaluator<br>agents</div>
+      </div>
+    </div>
+
+    <p class="job-body" style="margin: 0;">
+      The eval pipeline: ground-truth labeling with underwriter SMEs → rubrics that turn their judgment into scorable criteria → LLM-as-judge grading agent outputs for SME review → rapid, data-driven prompt tuning. Drove prototype to production with Legal, Compliance, AI Risk, and Architecture — scalable runtime on Bedrock AgentCore, Okta, Terraform.
+    </p>
+  </div>
+
+  <hr class="about-hr">
+
+  <!-- Projects -->
+  <div style="margin-bottom: 2.5rem;">
+    <p class="section-label">Personal projects</p>
+    <div class="projects">
+
+      <div class="project">
+        <div class="project-header">
+          <div>
+            <span class="project-name">Stride</span>
+            <span class="project-stack">Strands · Claude Sonnet 4.6 · DynamoDB · Twilio · Lambda</span>
+          </div>
+          <span class="project-cost">$1/mo</span>
+        </div>
+        <p class="project-desc">
+          Texts users first — no app, no login, no dashboard. Claude orchestrates 19 tools across the full coaching loop. Builds a behavioral profile per user: commit accuracy, pacing trends, recurring blockers — coaching adapts over time. Two-model cost design: Haiku classifies intent at ~$0.001/call, Sonnet handles reasoning with prompt caching. 233-test suite: fast CI gate (&lt;5s) + nightly Opus LLM-as-judge with critique-then-verdict. TCPA opt-out enforcement; per-user timezone scheduling via EventBridge.
+        </p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <div>
+            <span class="project-name">Stock Intel</span>
+            <span class="project-stack">Claude API · Lambda · DynamoDB · SQS · EventBridge</span>
+          </div>
+          <span class="project-cost">~$2/mo</span>
+        </div>
+        <p class="project-desc">
+          27 commands, 8 scanners pushing SQS-delivered Telegram alerts. 80% of commands cost $0 — deterministic signal scoring across 5 data sources feeds pre-computed summaries to Claude; AI synthesis calls ~$0.01 each. Production eval loop: conviction-gated recommendations are persisted at entry price and auto-graded against actual returns at 7, 14, and 30-day horizons. 286 tests.
+        </p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <div>
+            <span class="project-name">Apex</span>
+            <span class="project-stack">Strands · Bedrock · EventBridge · DynamoDB · Lambda</span>
+          </div>
+          <span class="project-cost">$0/mo</span>
+        </div>
+        <p class="project-desc">
+          Self-configuring health agent: add a metric to apex.yaml and the agent gains typed log/get tools at next cold start (Python closures over Strands SDK) — zero code changes. Natural-language logging: "slept 7h, 180g protein" → Claude parses and routes to the right tool. Single-table DynamoDB + GSI for per-metric history. EventBridge-scheduled morning check-ins. 25 moto integration tests.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="about-hr">
+
+  <!-- Stack -->
+  <div class="stack-section">
+    <p class="section-label">Stack</p>
+    <div class="stack-row">
+      <span class="stack-key">AI &amp; Agents</span>
+      <span class="stack-val">Strands SDK · Claude · Bedrock · AgentCore · LLM-as-judge · trajectory evals · Langfuse · OTEL · guardrails · prompt injection defense · MCP · RAG · OpenSearch · agent memory</span>
+    </div>
+    <div class="stack-row">
+      <span class="stack-key">AWS</span>
+      <span class="stack-val">Lambda · DynamoDB · SQS · EventBridge · Step Functions · EKS · Terraform · GitHub Actions · DVA-C02</span>
+    </div>
+    <div class="stack-row" style="margin-bottom: 0;">
+      <span class="stack-key">Code</span>
+      <span class="stack-val">Python · TypeScript · Node · React · Flask · REST/OpenAPI · event-driven &amp; serverless architecture · pytest · moto</span>
+    </div>
+  </div>
+
+  <hr class="about-hr">
+
+  <!-- Contact -->
+  <div>
+    <p class="section-label">Contact</p>
+    <div class="contact-row">
+      <span class="contact-key">Resume</span>
+      <span class="contact-val"><a href="/resume.pdf" target="_blank">hamse-abdi-resume.pdf ↓</a></span>
+    </div>
+    <div class="contact-row">
+      <span class="contact-key">GitHub</span>
+      <span class="contact-val"><a href="https://github.com/hamseabd" target="_blank" rel="noopener">hamseabd</a></span>
+    </div>
+    <div class="contact-row">
+      <span class="contact-key">LinkedIn</span>
+      <span class="contact-val"><a href="https://www.linkedin.com/in/hamseabdi/" target="_blank" rel="noopener">hamseabdi</a></span>
+    </div>
+    <div class="contact-row">
+      <span class="contact-key">Email</span>
+      <span class="contact-val"><a href="mailto:hmseabd@gmail.com">hmseabd@gmail.com</a></span>
+    </div>
+  </div>
+
+</div>
+{{- end }}

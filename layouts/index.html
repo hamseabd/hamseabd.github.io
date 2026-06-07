@@ -1,0 +1,239 @@
+{{- define "main" }}
+<style>
+  .home-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 3rem var(--gap);
+  }
+  .home-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    margin: 0 0 0.6rem;
+  }
+  .home-headline {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0 0 1rem;
+    color: var(--primary);
+  }
+  .home-bio {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--secondary);
+    margin: 0 0 2rem;
+    max-width: 540px;
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .metric {
+    background: var(--entry);
+    padding: 1rem 0.75rem;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .metric:last-child { border-right: none; }
+  .metric-num {
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+  .metric-label {
+    font-size: 11px;
+    color: var(--secondary);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .section {
+    margin-bottom: 2.5rem;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--secondary);
+  }
+  .section-link {
+    font-size: 12px;
+    color: var(--secondary);
+    text-decoration: none;
+  }
+  .section-link:hover { color: var(--primary); }
+  .row-list { border-top: 1px solid var(--border); }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+  }
+  a.row:hover .row-name { color: var(--primary); }
+  .row-left { display: flex; align-items: baseline; gap: 0; flex-wrap: wrap; }
+  .row-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--primary);
+    margin-right: 10px;
+  }
+  .row-desc {
+    font-size: 14px;
+    color: var(--secondary);
+  }
+  .row-meta {
+    font-size: 12px;
+    color: var(--secondary);
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+  .post-title {
+    font-size: 15px;
+    color: var(--primary);
+  }
+  .home-footer {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .footer-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: var(--secondary);
+    text-decoration: none;
+  }
+  .footer-link:hover { color: var(--primary); }
+  .footer-link svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  @media (max-width: 500px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .metric:nth-child(2) { border-right: none; }
+    .metric:nth-child(1),
+    .metric:nth-child(2) { border-bottom: 1px solid var(--border); }
+    .home-headline { font-size: 22px; }
+  }
+</style>
+
+<div class="home-wrap">
+
+  <p class="home-label">Hamse Abdi</p>
+  <h1 class="home-headline">AI Engineer building production<br>agentic systems on AWS.</h1>
+  <p class="home-bio">
+    At Travelers I replaced a manual underwriting review with a multi-agent pipeline on Bedrock. Outside work I run three deployed agents I use every day. I write about what it takes to ship agents in production — not demos.
+  </p>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-num">90%</div>
+      <div class="metric-label">underwriter<br>time saved</div>
+    </div>
+    <div class="metric">
+      <div class="metric-num">6h → 5m</div>
+      <div class="metric-label">referral case<br>review time</div>
+    </div>
+    <div class="metric">
+      <div class="metric-num">11</div>
+      <div class="metric-label">parallel agents<br>in production</div>
+    </div>
+    <div class="metric">
+      <div class="metric-num">$3/mo</div>
+      <div class="metric-label">3 personal agents<br>running</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Projects</span>
+      <a class="section-link" href="https://github.com/hamseabd" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <div class="row-list">
+      <div class="row">
+        <div class="row-left">
+          <span class="row-name">Stride</span>
+          <span class="row-desc">SMS coach · 19 tools · eval suite in CI</span>
+        </div>
+        <span class="row-meta">$1/mo</span>
+      </div>
+      <div class="row">
+        <div class="row-left">
+          <span class="row-name">Apex</span>
+          <span class="row-desc">Health bot · YAML-driven tool generation</span>
+        </div>
+        <span class="row-meta">$0/mo</span>
+      </div>
+      <div class="row">
+        <div class="row-left">
+          <span class="row-name">Stock Intel</span>
+          <span class="row-desc">Market intelligence · 27 commands · 8 scanners</span>
+        </div>
+        <span class="row-meta">$3/mo</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Writing</span>
+      <a class="section-link" href="/posts/">All posts ↗</a>
+    </div>
+    <div class="row-list">
+      {{- range first 5 (where .Site.RegularPages "Section" "posts") }}
+      <a class="row" href="{{ .Permalink }}">
+        <span class="post-title">{{ .Title }}</span>
+        <span class="row-meta">{{ .Date.Format "Jan 2006" }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </div>
+
+  <div class="home-footer">
+    <a class="footer-link" href="https://github.com/hamseabd" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      GitHub
+    </a>
+    <a class="footer-link" href="https://www.linkedin.com/in/hamseabdi/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      LinkedIn
+    </a>
+    <a class="footer-link" href="/resume.pdf" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Resume
+    </a>
+    <a class="footer-link" href="mailto:hmseabd@gmail.com">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      hmseabd@gmail.com
+    </a>
+  </div>
+
+</div>
+{{- end }}

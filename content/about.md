@@ -1,6 +1,7 @@
 ---
 title: "About"
 url: "/about/"
+layout: "about"
 summary: about
 hidemeta: true
 ShowToc: false
