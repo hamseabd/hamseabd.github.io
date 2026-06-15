@@ -26,7 +26,7 @@ No app. No dashboard. Just something in my texts that knows my patterns better t
 
 Building it forced an architectural decision I'd make again on anything that uses LLMs at scale.
 
-The decision I'm most pleased with: Stride uses two models. Claude Sonnet handles the full agent loop — 19 tools, multi-step reasoning, DynamoDB reads and writes across 14 entity types in a single-table design. Claude Haiku handles intent classification only, figuring out whether an incoming message is a check-in, a blocker, or something else. Haiku is 25x cheaper than Sonnet and intent detection doesn't need reasoning — just pattern matching. That one distinction keeps the cost at $1/month while keeping the quality where it needs to be.
+The decision I'm most pleased with: Stride uses two models. Claude Sonnet handles the full agent loop — 21 tools, multi-step reasoning, DynamoDB reads and writes across 14 entity types in a single-table design. Claude Haiku handles intent classification only, figuring out whether an incoming message is a check-in, a blocker, or something else. Haiku is 25x cheaper than Sonnet and intent detection doesn't need reasoning — just pattern matching. That one distinction keeps the cost at $1/month while keeping the quality where it needs to be.
 
 256 tests. A2P 10DLC SMS compliance. Full Powertools observability.
 
@@ -44,7 +44,7 @@ Building it raised a question I hadn't thought through: how much should the AI k
 
 The non-obvious piece: the AI assistant is grounded entirely in locked research docs — markdown files covering training, nutrition, supplements, sleep — loaded into the system prompt at boot. Apex cannot answer outside that knowledge base. For a health bot, that constraint is the feature. I don't want a hallucinated answer about recovery protocols; I want the answer I wrote down when I did the research.
 
-89 tests. 14 Strands tools. $0/month — runs entirely within the AWS free tier.
+153 tests. 14 Strands tools. $0/month — runs entirely within the AWS free tier.
 
 ## Stock Intel — my market intelligence platform
 
@@ -82,6 +82,6 @@ I'm reworking all three from deployed to properly done. Eval suites in CI — LL
 
 I'm publishing weekly on the specifics — what the eval setup looks like, what broke when I added it, what the real numbers look like in practice.
 
-Next up: Stride's eval suite. I wrote the full design before touching any code — 12 deterministic assertions, 7 LLM-as-judge rubrics, a calibration protocol for keeping evals honest over time. That post is next week.
+Next up: Apex's eval suite. The interesting part isn't grading what the bot says — it's grading what it does. You text "slept 7 and a half hours" and a row has to land in DynamoDB with the right metric, the right value, on the right date. I built a harness that spins up the real agent against mocked AWS, sends one message, and then queries the database to check the outcome — deterministic, no LLM judge, a few cents a run. That post is next.
 
 If you're building a team that ships this kind of work, or you've been through your own production agent rework and have lessons worth sharing, I'd like to hear from you. [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).
