@@ -29,13 +29,11 @@ That's the demo. The rest of this post is the part that isn't.
 
 ## Why I built it
 
-Nobody reviews my pull requests. I run four side projects on my own, and the only reviewer any of them has ever had is me, on the same afternoon I wrote the code, which is the worst possible time to look at it.
+Nobody reviews my pull requests. I run four side projects alone, and the only reviewer any of them has had is me, the same afternoon I wrote the code.
 
-So I sketched a code-review agent in my head. A lead reviewer, a few specialists, something to check the findings before they reach me. That took an hour, and then it wouldn't leave. That's usually my signal: if a design is still buzzing after I've deliberately stopped thinking about it, I have to build it, because buzzing isn't the same as knowing. I learn by doing.
+So I sketched a code-review agent in my head. A lead reviewer, a few specialists, something to check the findings before they reach me. That took an hour, and then it wouldn't leave. That's my signal: buzzing isn't the same as knowing, and I learn by doing.
 
-A design in your head is always right. It has never had to survive anything. The built one has to survive an adversarial pull request, a model that ignores its own prompt, a schema it doesn't feel like filling in, and a token that must never reach a public log.
-
-Building it is also where I found the thing I'd have gotten wrong on the whiteboard. The bottleneck isn't generation. Models write review comments faster than I can read them, so an agent that emits confident findings nobody checked doesn't shrink my pile, it adds to it. The question was never "can a model find bugs in a diff." It was: what has to be true for a finding to be worth a minute of my attention?
+A design in your head is always right. It has never had to survive an adversarial pull request, a model that ignores its own prompt, or a token that must never reach a public log. Or the thing I'd have gotten wrong on the whiteboard: the bottleneck isn't finding bugs, it's trusting what comes back.
 
 Argus is where I landed. It's on the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agent-sdk/overview), in Python. It reviews a pull request or a local diff, posts inline comments under its own GitHub App identity, and exits with a code you can gate a merge on. It runs on all four repos, including its own. Code: [github.com/hamseabd/argus](https://github.com/hamseabd/argus).
 
