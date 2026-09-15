@@ -268,7 +268,7 @@ Five small pull requests on one repository: read it as the shape of the cost, no
 Evaluating an agent means evaluating the harness and the model together.
 Argus has three layers of that and is missing a fourth.
 
-The deterministic layer is the unit suite: 281 tests as of today, covering the pipeline, the diff parser, the commentable-line index, the schemas, the hooks, and the workflow's shape.
+The deterministic layer is the unit suite: 282 tests as of today, covering the pipeline, the diff parser, the commentable-line index, the schemas, the hooks, and the workflow's shape.
 It runs offline on every commit, and it is the only layer that changes the output when it fails.
 
 The end-to-end layer is the seeded-bug fixture from the top of this post.
