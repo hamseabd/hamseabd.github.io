@@ -39,7 +39,7 @@ params:
 
       At Travelers, I built a multi-agent underwriting system — reader agent + 11 parallel evaluators on Bedrock via Strands SDK — that replaced a 23-minute manual expert review with citation-backed approve/decline/escalate decisions. An independent LLM-as-judge rated it more accurate than the GPT-4 incumbent on 72% of 109 disagreements (n = 891 evaluations).
 
-      Outside work, I run three deployed agents: Stride (SMS productivity coach), Apex (proactive health accountability bot), and Stock Intel (Telegram market intelligence platform).
+      Outside work, I run three deployed agents: Stride (SMS productivity coach), Apex (proactive health accountability bot), and Stock Intel (Telegram market intelligence platform), plus Argus, a multi-agent code reviewer on the Claude Agent SDK that verifies its own findings and reviews its own pull requests.
 
       I write about what it takes to ship agents in production: multi-agent architecture, eval strategies that catch real bugs, LLM observability, and keeping three production systems running on $1–3/month.
 
