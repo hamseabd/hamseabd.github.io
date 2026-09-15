@@ -1,7 +1,7 @@
 ---
 title: "I built the code-review agent. Here's what the whiteboard version leaves out."
 date: 2026-09-15
-draft: true
+draft: false
 tags: ["agents", "code-review", "claude-agent-sdk", "harness-engineering", "evals"]
 summary: "Argus is a code reviewer on the Claude Agent SDK: a lead agent orchestrating three specialists, every finding checked by a second model trying to refute it, no write access to anything, $0 to run, and it reviews its own pull requests. The design is the easy part. This is the rest."
 ShowToc: true
