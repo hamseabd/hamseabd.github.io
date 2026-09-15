@@ -29,13 +29,15 @@ That's the demo. The rest of this post is the part that isn't.
 
 ## Why I built it
 
-A code-review agent is the design exercise everyone in this field has done on a whiteboard. I've done it. The whiteboard version is cheap and it's always right.
+Nobody reviews my pull requests. I run four side projects on my own, and the only reviewer any of them has ever had is me, on the same afternoon I wrote the code, which is the worst possible time to look at it.
 
-The built version has to survive an adversarial pull request, a model that ignores its own prompt, a schema it doesn't feel like filling in, and a token that must never reach a public log. I wanted to know what that costs.
+So I sketched a code-review agent in my head. A lead reviewer, a few specialists, something to check the findings before they reach me. That took an hour, and then it wouldn't leave. That's usually my signal: if a design is still buzzing after I've deliberately stopped thinking about it, I have to build it, because buzzing isn't the same as knowing. I learn by doing.
 
-The premise: the bottleneck isn't generation. Models write code and review comments faster than anyone can read them, so an agent that emits confident findings nobody checked doesn't reduce that pile, it adds to it. The design question was never "can a model find bugs in a diff." It was: what has to be true for a finding to be worth a human's minute?
+A design in your head is always right. It has never had to survive anything. The built one has to survive an adversarial pull request, a model that ignores its own prompt, a schema it doesn't feel like filling in, and a token that must never reach a public log.
 
-Argus is my answer. It's on the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agent-sdk/overview), in Python. It reviews a pull request or a local diff, posts inline comments under its own GitHub App identity, and exits with a code you can gate a merge on. It runs on four of my repos, including its own. Code: [github.com/hamseabd/argus](https://github.com/hamseabd/argus).
+Building it is also where I found the thing I'd have gotten wrong on the whiteboard. The bottleneck isn't generation. Models write review comments faster than I can read them, so an agent that emits confident findings nobody checked doesn't shrink my pile, it adds to it. The question was never "can a model find bugs in a diff." It was: what has to be true for a finding to be worth a minute of my attention?
+
+Argus is where I landed. It's on the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agent-sdk/overview), in Python. It reviews a pull request or a local diff, posts inline comments under its own GitHub App identity, and exits with a code you can gate a merge on. It runs on all four repos, including its own. Code: [github.com/hamseabd/argus](https://github.com/hamseabd/argus).
 
 ## The questions I ask before any architecture
 

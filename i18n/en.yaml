@@ -1,0 +1,5 @@
+# PaperMod's post nav calls the older post "Next", because Hugo's .Prev/.Next
+# walk the date-descending list rather than the calendar. Label them by time
+# instead, so the arrow at the foot of a post says where it actually goes.
+prev_page: "Newer post"
+next_page: "Older post"
