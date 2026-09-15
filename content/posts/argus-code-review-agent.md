@@ -1,9 +1,9 @@
 ---
-title: "Argus: a code-review agent that has to prove its findings"
+title: "Argus: I built the code-review agent, harness and all"
 date: 2026-09-15
 draft: true
-tags: ["agents", "code-review", "claude-agent-sdk", "evals", "harness-engineering"]
-summary: "I built an agentic code reviewer on the Claude Agent SDK. The harness orchestrates three specialist subagents, an independent verifier tries to refute every finding, the model never touches the repository or posts anything itself, and the whole thing runs for $0 on GitHub Actions and reviews its own pull requests. How it works, what the telemetry changed, and where it is still wrong."
+tags: ["agents", "code-review", "claude-agent-sdk", "harness-engineering", "evals"]
+summary: "Everyone can whiteboard a code-review agent. I built one on the Claude Agent SDK and wired it into CI: a harness that orchestrates specialist subagents, verifies every finding by trying to refute it, never lets the model touch the repository or post anything itself, and reviews its own pull requests for $0. Here is the design spine, the harness piece by piece, what the telemetry changed, and where it is still wrong."
 ShowToc: true
 ShowReadingTime: true
 ---
@@ -27,40 +27,47 @@ Cost $0.28 · 51,516 input tokens (51,500 cached) · 15 turns · 66.7 s · 3 sub
 Agents: lead 2 turns, 4 tool calls · correctness 1 turn, 2 tool calls, 12.9 s · security 1 turn, 1 tool call, 10.3 s · quality 3 turns, 5 tool calls, 17.5 s
 ```
 
-That is the pitch.
-The rest of this post is how the harness works, what the telemetry changed, and where it is still wrong.
-The code is at [github.com/hamseabd/argus](https://github.com/hamseabd/argus).
+## Why I built it
 
-## The problem is verification, not generation
+A code-review agent is the design exercise everyone in this field has done on a whiteboard, me included.
+The whiteboard version is cheap and it is always right.
+The built version has to survive an adversarial pull request, a model that ignores its prompt, a schema it does not feel like filling in, and a token that must never reach a public log.
+I wanted to know what the built version actually costs, so I built it.
 
-Models generate code and review comments faster than anyone can check them.
-A code-review agent that produces confident findings nobody has verified does not reduce that load; it adds to it.
-So the design question for Argus was never "can a model find bugs in a diff."
-It was: what does it take for a finding to be worth a human's attention, and what must the harness guarantee so that a reviewer with write access to nothing can be wired into CI without a second thought.
-
-Argus is my answer.
-It is an agentic code reviewer built on the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agent-sdk/overview), in Python.
+Argus is an agentic code reviewer on the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agent-sdk/overview), in Python.
 It reviews a pull request or a local diff, posts inline review comments under its own GitHub App identity, and exits with a code the caller can gate a merge on.
-It runs on every pull request of four of my repositories, including its own.
+It runs on the pull requests of four of my repositories, including its own.
+The code is at [github.com/hamseabd/argus](https://github.com/hamseabd/argus), and every number below comes from that repository's pull requests or from the run above.
 
-## Harness, not prompt
+## The questions I answer before writing an agent
 
-A distinction first, because the vocabulary is loose.
-Claude Code is an agent harness: the loop that calls the model, executes its tool calls, spawns subagents, runs hooks, and enforces permissions.
-The Claude Agent SDK is that harness as a library.
-Argus is the harness built on top of it: the code that decides what goes into the loop, what the loop is allowed to touch, what must come out, and what happens next.
+The same seven questions, every time, before any architecture.
+Argus's answers, one line each; the rest of the post is the evidence.
 
-That split shapes everything.
-The model is used in exactly two places, where judgment is needed: reviewing the change and verifying a finding.
-Everything else is a mechanism.
-Parsing the diff, indexing which lines a GitHub review comment may attach to, capping the context, ranking, rendering, posting, and gating are deterministic Python with unit tests.
-The model never posts, never commits, and never calls GitHub.
-The harness writes; the model only answers.
+1. **Is the path known in advance?**
+   Mostly.
+   A review is a fixed five-stage workflow, and the open-ended part, reading a repository to judge a diff, is confined to one stage.
+   So the pipeline is deterministic Python and the agent loop lives inside one stage of it.
+2. **Where does the model go, and where does it not?**
+   Two places: reviewing the change and verifying a finding.
+   Everything else is a mechanism.
+3. **What is the unit of work?**
+   One finding.
+   It is verified on its own, ranked on its own, and posted or dropped on its own.
+4. **What is the oracle?**
+   For a finding, a second model with a fresh context that tries to refute it by reading the code, and then a human disposition.
+   For the system, a seeded-bug repository where the answers are known.
+5. **What may it write?**
+   Nothing.
+   The model has no mutating tool, and the harness is what posts the review.
+6. **Which rung?**
+   Advisory.
+   The review never requests changes; the exit code is there if a caller wants a gate.
+7. **What binds, and what is the guardrail metric?**
+   Two non-functionals bind a review agent: the signal ratio, because a finding costs a human a minute, and untrusted input, because the pull request is the input.
+   The guardrail is cost per review, attributed per agent, and the count of structured outputs the model got wrong.
 
 ## How a review runs
-
-Five stages.
-Python owns the pipeline; the SDK owns the fan-out inside the review stage.
 
 ```
 1. context   PR number -> GitHub API -> diff, files, metadata
@@ -79,28 +86,18 @@ Python owns the pipeline; the SDK owns the fan-out inside the review stage.
 5. report    terminal Markdown, JSON artifact, GitHub review with inline comments
 ```
 
-**Context.**
-PR mode fetches the diff, the changed files, and the metadata from the GitHub REST API; local mode diffs from the merge base with the base branch.
-The diff has a 200 KB context budget.
-Files are dropped largest first until it fits, and the lead is told which ones it can read directly instead.
+**Context** fetches the diff, the changed files, and the metadata from the GitHub REST API, or diffs locally from the merge base.
+The diff has a 200 KB context budget; files are dropped largest first until it fits, and the lead is told which ones it may read directly instead.
 
-**Review.**
-One SDK `query()` runs the lead reviewer on Opus as the orchestrator.
-It must delegate to three specialist subagents on Sonnet in one turn, so they run in parallel: correctness, security, and quality, each with its own system prompt and the same read-only tool set.
-Each specialist returns a JSON array of findings.
-The lead merges them, drops duplicates, and answers with a `Review` as structured output.
-The SDK validates that output against a JSON Schema derived from the Pydantic domain model; the harness validates it again with Pydantic on the way in, and assigns the finding ids itself.
+**Review** is one SDK `query()`.
+The lead reviewer on Opus is the orchestrator: it must delegate to three specialist subagents on Sonnet in one turn, so they run in parallel, each with its own system prompt and the same read-only tool set.
+Each specialist returns a JSON array of findings; the lead merges them, drops duplicates, and answers with a `Review` as structured output.
 
-**Verify.**
-Every finding gets its own query, with its own context window, holding only the finding and its diff hunk.
-The verifier reads the code and confirms only if the code path actually exhibits the issue at the reported location.
+**Verify** runs one query per finding, in its own context window, holding only the finding and its diff hunk.
 At most four run concurrently.
 
-**Rank and report.**
-Rejected findings are dropped.
+**Rank and report** are pure functions.
 A finding lands as an inline comment when its line is in the diff, otherwise in the review body.
-The review is advisory: it never requests changes.
-If a team wants a gate, the CLI exit code is the gate, so the policy lives in the caller's workflow and not in the model's opinion.
 
 Here is what an inline finding looks like, on Argus's own code:
 
@@ -109,108 +106,105 @@ Here is what an inline finding looks like, on Argus's own code:
 The redaction regex covered Claude tokens but not the GitHub token in the same environment.
 The verifier confirmed it, and the fix landed with a test before merge.
 
-## Decision 1: verify by refutation
+## The harness, piece by piece
+
+The vocabulary is loose, so a distinction first.
+Claude Code is an agent harness: the loop that calls the model, executes tool calls, spawns subagents, runs hooks, and enforces permissions.
+The Claude Agent SDK is that harness as a library.
+Argus is the harness I built on top of it: what goes into the loop, what the loop may touch, what must come out, and what happens next.
+
+| The SDK provides | What Argus does with it |
+|---|---|
+| `query()` with `ClaudeAgentOptions` | One query for the review stage, one per finding for verification. Model, effort, turn cap, and dollar cap set per stage from a settings object. |
+| `agents` and `AgentDefinition` | Three specialists, each with its own prompt, Sonnet, a 25-turn cap, and read-only tools. |
+| `tools`, `allowed_tools`, `disallowed_tools`, `permission_mode` | `Read`, `Grep`, `Glob`, `Agent`, and one MCP tool. Every mutating tool disallowed. `dontAsk`, because nobody is at the keyboard in CI. |
+| Hooks: `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `SubagentStart`, `SubagentStop` | Deny mutating tools with a reason. Cap the lead's reads. Audit every tool call. Count rejected structured outputs. Time each subagent. |
+| `create_sdk_mcp_server` and `@tool` | `git_history`: in-process, read-only, `git log -L` for a line range, refuses paths outside the repository. |
+| `output_format` with a JSON Schema | `Review` and `Verdict` schemas derived from the Pydantic domain models, with length floors on prose fields. |
+| `setting_sources=[]` and `strict_mcp_config` | The repository under review cannot inject its `.claude/` settings, hooks, `CLAUDE.md`, or MCP servers into the reviewer. |
+| The message stream: `AssistantMessage`, `ResultMessage`, `RateLimitEvent` | A runner turns the stream into a result plus metrics, and turns five failure modes into typed errors that carry the cost so far. A ledger attributes turns and tokens per agent. |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Subscription auth. No API key, no cloud, $0 to operate. |
+
+Two things follow from this table.
+
+The model is used in exactly two places.
+Diff parsing, the index of which lines a GitHub comment may attach to, the context cap, ranking, rendering, posting, and gating are deterministic Python with unit tests.
+The model never posts, never commits, never calls GitHub.
+The harness writes; the model only answers.
+
+And the pipeline does not know the SDK exists.
+It is plain Python over Pydantic types, `Finding`, `Review`, `Verdict`, `ReviewResult`, and it talks to the agent through a `ReviewAgent` protocol with two methods.
+The whole flow runs under test with a fake agent, offline, in seconds.
+Only one package imports the SDK, and a test enforces that by scanning the source and by importing every other module in a subprocess and asserting the SDK never loaded.
+
+## The oracle: verify by refutation
 
 The lead never checks its own findings.
 Each one goes to a fresh query whose prompt says: try to refute this by reading the code.
-Confirm only if the code path exhibits the issue.
+Confirm only if the code path exhibits the issue at the reported location.
 Reject if there is a guard the reporter missed, an input that cannot occur, a test that already covers the case, or if it is a style preference dressed as a defect.
 
-Two reasons, one about quality and one about cost.
-
-A finding that survives an independent attempt to refute it is worth more than one the reporter re-read and still liked.
+A finding that survives an independent attempt to refute it is worth a human's minute.
+One the reporter re-read and still liked is not evidence of anything.
 And the failure mode is honest: if a verification query fails, the finding is reported as `unverified`, never as `confirmed`.
 The harness does not guess.
 
-The cost reason I found by measuring.
+I also found the cost reason by measuring.
 The first two reviews let the lead re-check findings itself, and it did: 22 to 26 Opus turns re-reading code, $0.88 of the $1.37 the review of [PR #8](https://github.com/hamseabd/argus/pull/8) cost.
 That is the verifier's job.
 The lead now delegates, merges, and returns, and its own thread costs about six cents.
 
-The limitation: verification is another model reading the same code with the same training.
+The limitation: the verifier is another model reading the same code with the same training.
 It catches reasoning errors.
-It does not catch knowledge errors, and I have a concrete case of that below.
+It does not catch knowledge errors, and there is a concrete case of that below.
 
-## Decision 2: an agent in CI is a supply-chain component
+## The input is untrusted: an agent in CI is a supply-chain component
 
 An agent running in CI holds the union of its tools' privileges and is driven by untrusted input, because the pull request is the input.
-That is the threat model, and the guardrails are attached where the side effects happen: at the tools, not in the prompt.
-
-Three layers, each stronger than the one before.
+That is the threat model, and the guardrails attach where side effects happen: at the tools, not in the prompt.
 
 - **The tool set is runtime policy.**
-  Reviewers get `Read`, `Grep`, `Glob`, `Agent`, and one custom read-only tool.
-  Nothing else is loaded.
+  Nothing mutating or network-facing is loaded.
 - **A `PreToolUse` hook is my code.**
   It runs on the event whether the model cooperates or not.
-  If `Write`, `Edit`, `Bash`, `WebFetch`, or any other mutating or network tool is ever requested, the hook denies it with a reason the model can read, so it does not retry.
-  With no mutating or network tool available, a prompt injection in a diff cannot write, execute, or exfiltrate.
+  If `Write`, `Edit`, `Bash`, `WebFetch`, or any other denied tool is requested, the hook refuses it with a reason the model can read, so it does not retry.
+  With no mutating or network tool, a prompt injection in a diff cannot write, execute, or exfiltrate.
 - **`setting_sources=[]` isolates the session.**
-  The repository under review cannot reach the reviewer through its own `.claude/` settings, its hooks, or its `CLAUDE.md`.
-
-The one custom tool is `git_history`, served by an in-process MCP server.
-It runs `git log -L` for a line range so a specialist can tell a fresh regression from a long-standing deliberate choice, and it refuses paths outside the repository root.
+  The reviewed repository's own configuration never reaches the reviewer.
 
 The same threat model runs through the GitHub Actions workflow.
 Argus is installed and run from its own repository at a pinned commit, never from the pull request under review.
 The PR head is checked out into a separate directory that is only read; the trust boundary is the checkout.
 The review is posted with a short-lived GitHub App installation token, minted just before the review step with only `pull-requests: write`, and revoked when the job ends.
-Every action is pinned to a commit SHA, and Dependabot moves the pins.
+Every action is pinned to a commit SHA and Dependabot moves the pins.
 Pull requests from forks are skipped, because GitHub gives them no secrets anyway.
 
-Any repository can call that workflow as a reusable workflow.
+Any repository can call that workflow.
 The first one that did was my own [apex-agent](https://github.com/hamseabd/apex-agent/pull/5#pullrequestreview-5186879344), and Argus's first review there flagged the caller for pinning the workflow to a mutable tag instead of a commit: a supply-chain finding in the file that invokes Argus itself.
 The caller merged with a commit pin.
 
-The limitation: IDE and CI are different risk profiles, and Argus only solves the CI one.
-Run it locally with `--diff` and it is still read-only, but it is running with your credentials on your machine.
+The limitation: IDE and CI are different risk profiles, and Argus solves the CI one.
+Run it locally with `--diff` and it is still read-only, but it runs with your credentials on your machine.
 
-## Decision 3: the harness owns the pipeline
+## Who refuses: the enforcement ladder
 
-The pipeline is plain Python over Pydantic domain types: `Finding`, `Review`, `Verdict`, `ReviewResult`.
-It talks to the agent through a `ReviewAgent` protocol with two methods, `review` and `verify`, and nothing in the pipeline knows the SDK exists.
+Three things can refuse the model in Argus, and the order matters.
+The prompt asks.
+The schema rejects.
+The hook denies.
+I learned to reach for the right one by getting it wrong first.
 
-That buys two things.
-The whole flow runs under test with a fake agent, offline, without credentials, in seconds.
-And only one package, `argus/agent/`, imports the SDK.
-A test enforces the boundary by scanning the source and by importing every other module in a subprocess and asserting the SDK never loaded.
-
-As of today there are 281 unit tests that run without network, plus one opt-in live test that builds the seeded-bug repository from the top of this post and asserts Argus confirms a finding in it against the real SDK.
-
-The prompts are Markdown files inside the package, versioned and reviewed like code.
-A prompt change ships the way a code change does: a branch, a pull request, a test where one applies, and an Argus review of its own.
-
-## What the telemetry changed
-
-The SDK reports usage for a query as a whole.
-That was not enough to explain why two reviews of similar diffs cost $0.42 and $2.49, so Argus attributes usage itself.
-Every assistant message in the stream names the `Agent` tool call that spawned its author, and the tool hooks inside a subagent carry that subagent's id.
-Joining the two gives turns, tokens, tool calls, and duration per agent, in the JSON artifact and in the footer of every review.
-It is the line under the cost in the output at the top of this post.
-
-That line changed three decisions.
-
-**The specialist turn cap.**
-It was 15 until the per-agent line showed the quality specialist using all 15 on three reviews in a row and reporting nothing.
-A capped run costs the same and returns less.
-It is 25 now, and a specialist that hits the cap is logged, because its findings may be incomplete.
-
-**The lead's model.**
-I measured a Sonnet lead on the same diff as the Opus lead: $0.73, same finding.
-But it delegated one specialist at a time and made no-op `Agent` calls.
-The lead stays on Opus, where its share of the cost is about six cents.
-
-**The lead's reading, and the enforcement ladder.**
-This is the one I would tell anyone building agents.
 The lead's prompt had said, for several increments: do not re-read the code, the specialists have read it and the verifier will read it again.
+Per-agent telemetry then showed what the prompt was worth.
 On the review of [PR #10](https://github.com/hamseabd/argus/pull/10#pullrequestreview-5189614285) the lead made 43 tool calls on a four-file diff, delegated to its three specialists sixteen seconds apart instead of in one message, and the review cost $2.49.
 On [PR #18](https://github.com/hamseabd/argus/pull/18) it made two, for $0.42.
 Same prompt.
 
-A prompt is an instruction, and the model can ignore an instruction.
+A prompt is an instruction, and a model can ignore an instruction.
 A hook is my code, and it runs whether the model cooperates or not.
-So the budget moved down the ladder: the lead gets ten reads, enforced by a `PreToolUse` hook; once it is spent, every further read is refused with a reason, and the only move left is to answer.
-Delegation and the final answer are never refused.
+So the budget moved down the ladder.
+The lead gets ten reads, enforced by a `PreToolUse` hook; once they are spent, every further read is refused with a reason, and the only move left is to answer.
+Delegation and the final answer are never refused, so the rule cannot strand a review.
 
 ```python
 def limit_lead_reading(state: HookState) -> Hook:
@@ -236,16 +230,26 @@ def limit_lead_reading(state: HookState) -> Hook:
     return hook
 ```
 
-The same move, once more, on the output contract.
-The `Review` schema puts a length floor on the summary, and the `Verdict` schema on the verifier's reasoning.
-Before that floor, the lead's structured output was rejected three times on one review, and then a structurally valid payload whose summary was "Test call to diagnose schema validation." validated and was posted as the review.
+The schema is the same move on the output contract.
+Before the `Review` schema had a length floor on the summary, the lead's structured output was rejected three times on one review, and then a structurally valid payload whose summary was "Test call to diagnose schema validation." validated and was posted as the review.
 Now a placeholder that fits the shape is rejected by the SDK's validator and the model has to write the real thing.
-The number of rejected outputs is part of every stage's metrics rather than a log line, because if a model update shifts behaviour, structured output is a likely place to see it first.
+The count of rejected outputs is a metric on every stage rather than a log line, because if a model update shifts behaviour, structured output is a likely place to see it first.
 
-### What a review costs
+Caps are the last refusal: the lead stops at 40 turns or $3.00, each specialist at 25 turns, each verifier at 10 turns or $0.50, and a specialist that uses every turn it has is logged, because its findings may be incomplete.
 
-Argus authenticates with a Claude subscription token, so a review costs quota, not money.
-The SDK still reports what the same run would have cost on the API, and the harness breaks it down per stage and per agent.
+## What it costs, per agent
+
+The SDK reports usage for a query as a whole.
+That could not explain why two reviews of similar diffs cost $0.42 and $2.49, so Argus attributes usage itself.
+Every assistant message in the stream names the `Agent` tool call that spawned its author, and the tool hooks inside a subagent carry that subagent's id.
+Joining the two gives turns, tokens, tool calls, and duration per agent, in the JSON artifact and in the footer of every review.
+It is the last line of the output at the top of this post.
+
+That line is what changed the specialist cap from 15 to 25, after the quality specialist used all 15 on three reviews in a row and reported nothing.
+It is what kept the lead on Opus: a Sonnet lead on the same diff cost $0.73 and found the same finding, but delegated one specialist at a time and made no-op `Agent` calls.
+And it is what exposed the lead's reading above.
+
+Argus authenticates with a subscription token, so a review costs quota, not money; the SDK still reports what the run would have cost on the API.
 
 | Run | Cost | Time | Turns |
 |---|---|---|---|
@@ -257,19 +261,20 @@ The SDK still reports what the same run would have cost on the API, and the harn
 
 Most of the input is prompt-cache reads: 805,554 of 805,620 input tokens on PR #7.
 The marginal turn is cheap; turns and output are what cost.
-These are five small pull requests on one repository, so read the table as the shape of the cost, not as a benchmark.
+Five small pull requests on one repository: read it as the shape of the cost, not a benchmark.
 
 ## Evaluation, honestly
 
-Evaluating an agent means evaluating the harness and the model together, and Argus has three layers of that today and is missing a fourth.
+Evaluating an agent means evaluating the harness and the model together.
+Argus has three layers of that and is missing a fourth.
 
-The deterministic layer is the unit suite: the pipeline, the diff parser, the commentable-line index, the schemas, the hooks, the workflow's shape.
-It runs on every commit and it is the only layer that changes the output when it fails.
+The deterministic layer is the unit suite: 281 tests as of today, covering the pipeline, the diff parser, the commentable-line index, the schemas, the hooks, and the workflow's shape.
+It runs offline on every commit, and it is the only layer that changes the output when it fails.
 
-The end-to-end layer is the seeded-bug fixture.
+The end-to-end layer is the seeded-bug fixture from the top of this post.
 Seeded bugs are a labeled corpus of known-bad code, so whether Argus catches them is measurable at zero labeling cost.
-The limitation is size: one fixture, two bugs.
 It proves the harness, the SDK, and the model still work together, which is the check I want after every SDK or model update.
+The limitation is size: one fixture, two bugs.
 It does not measure precision.
 
 The production layer is dogfooding.
@@ -277,7 +282,8 @@ Every pull request on Argus's own repository since the workflow landed has been 
 The human is the last layer, and merging is a human action.
 
 The fourth layer is the one I have not built: a golden set of real pull requests with labeled findings, so precision and recall are numbers rather than impressions.
-The dispositions are the labels for it, and building it is the next increment.
+The dispositions are the labels for it.
+It is the next increment.
 
 ### When it was wrong
 
@@ -287,7 +293,6 @@ Both were wrong.
 Those fields exist; the finding reflected older documentation.
 I proved it the only way that settles it, with two probe runs that printed the contexts from inside a called workflow, and wrote the disposition on the pull request with links to the runs.
 
-The lesson is the one I flagged under Decision 1.
 The verifier reads the code, so it catches reasoning errors.
 It shares the reporter's knowledge cutoff, so it cannot catch knowledge errors.
 That is why the review is advisory, why the exit code is the gate, and why every finding gets a human disposition.
@@ -305,10 +310,12 @@ The repository is meant to be read, so the process is in it.
   Every increment starts with a test that fails.
 - **Architecture rules are tests, not comments.**
   The SDK boundary, the no-print rule, and the workflow's triggers, permissions, timeout, and concurrency are all asserted.
+- **Prompts ship like code.**
+  They are Markdown files inside the package, versioned, tested where a test applies, and reviewed on a pull request, by Argus among others.
 - **Argus reviews its own pull requests.**
-  Every pull request since the workflow landed, with a disposition per finding.
+  Every one since the workflow landed, with a disposition per finding.
 - **Decisions changed by measurement.**
-  Each of the three above is traceable to a pull request with the numbers in it.
+  The specialist cap, the lead's model, and the read budget are each traceable to a pull request with the numbers in it.
 
 Claude Code was the pair programmer throughout.
 The design, the failing tests, the review of every diff, and every merge were mine.
@@ -317,7 +324,7 @@ The design, the failing tests, the review of every diff, and every merge were mi
 
 It skips pull requests from forks.
 It reviews a pull request when it opens or leaves draft, not on every push; a maintainer can trigger a review on demand.
-It does not reply in threads or learn from dispositions.
+It does not reply in threads, and it does not learn from dispositions.
 It has no measured precision, which is the next increment, and the numbers above are from a few weeks on my own repositories.
 
 The repository is [github.com/hamseabd/argus](https://github.com/hamseabd/argus).
