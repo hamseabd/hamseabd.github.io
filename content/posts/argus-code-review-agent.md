@@ -55,6 +55,23 @@ Same list every time, before I draw anything.
 
 **What binds?** Two things bind a review agent. Signal ratio, because a bad finding costs a human a minute and they stop reading after a few. And untrusted input, because the pull request *is* the input.
 
+## Orchestrator, specialists, verifier
+
+Five stages, and the model is in two of them.
+
+```
+context   PR or local diff → the unified diff, changed files, and the lines GitHub will accept a comment on
+review    one query: a lead on Opus delegates to three specialists on Sonnet in a single turn,
+          merges what they return, answers with a Review as structured output
+verify    one query per finding, fresh context, its only job is to refute the finding
+rank      rejected findings dropped; confirmed before unverified, then severity, then path
+report    terminal, JSON artifact, GitHub review with inline comments
+```
+
+The specialists are correctness, security, and quality. Each is a subagent with its own context, the same read-only tools, and a turn cap. They never see each other's output; the lead does the merging. That split buys context isolation and failure containment and costs coordination, which is why the lead is told to fan out in one message and little else.
+
+The lead is an orchestrator, not a reviewer. It delegates, de-duplicates, and returns. Checking findings is the verifier's job, and the verifier is not a subagent of the lead. It's a separate query with none of the lead's context, so it can't inherit the lead's reasoning. That separation is the whole design. The rest of this post is what it took to make it hold.
+
 ## Harness, not prompt
 
 The vocabulary here is loose, so: Claude Code is an agent harness, the loop that calls the model, runs its tool calls, spawns subagents, fires hooks, enforces permissions. The Claude Agent SDK is that harness as a library. Argus is the harness I built on top: what goes into the loop, what the loop can touch, what has to come out, and what happens next.
@@ -207,8 +224,8 @@ Claude Code was the pair programmer throughout. The design, the failing tests, t
 
 ## What it doesn't do yet
 
-No fork PRs. No review on every push, only on open and ready-for-review, plus on demand. No thread replies, and no learning from dispositions. And no measured precision, which is the next thing.
+No fork PRs. No review on every push, only on open and ready-for-review, plus on demand. No thread replies, and no learning from dispositions. No warning yet when a specialist returns in a second having read nothing, so a clean review and a review nobody performed look the same in the footer. And no measured precision, which is the next thing.
 
-The repo is [github.com/hamseabd/argus](https://github.com/hamseabd/argus). The README is the design doc, the pull requests are the history, and the review on [PR #21](https://github.com/hamseabd/argus/pull/21#pullrequestreview-5191721455) is a good place to watch it work on real code.
+The repo is [github.com/hamseabd/argus](https://github.com/hamseabd/argus). The README is the design doc, the pull requests are the history, and the review on [PR #21](https://github.com/hamseabd/argus/pull/21#pullrequestreview-5193728122) is a good place to watch it work on real code.
 
 If you're building agents that have to earn trust inside a real engineering workflow, I'd like to compare notes. [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).
