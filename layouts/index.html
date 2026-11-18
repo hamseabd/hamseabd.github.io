@@ -1,239 +1,227 @@
 {{- define "main" }}
+{{- $argusPost := site.GetPage "/posts/argus-code-review-agent" }}
+{{- $apexPost := site.GetPage "/posts/apex-evals-grading-what-it-does" }}
 <style>
-  .home-wrap {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 3rem var(--gap);
-  }
-  .home-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  .home {
+    padding: 2.5rem 0 1rem;
+    font-size: 15px;
+    line-height: 1.7;
     color: var(--secondary);
-    margin: 0 0 0.6rem;
+  }
+  .home a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-decoration-color: var(--tertiary);
+    text-underline-offset: 3px;
+  }
+  .home a:hover { text-decoration-color: var(--primary); }
+  .home a:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .home-who {
+    margin: 0 0 0.75rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .home-who span {
+    color: var(--secondary);
+    font-weight: 400;
   }
   .home-headline {
-    font-size: 26px;
-    font-weight: 600;
-    line-height: 1.3;
-    margin: 0 0 1rem;
+    margin: 0 0 1.25rem;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
     color: var(--primary);
+    text-wrap: balance;
   }
   .home-bio {
+    max-width: 62ch;
+    margin: 0 0 0.9rem;
+  }
+  .home-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 1.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .home-section { margin-top: 3rem; }
+  .home-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .home-section-head h2 {
+    margin: 0;
     font-size: 15px;
-    line-height: 1.75;
-    color: var(--secondary);
-    margin: 0 0 2rem;
-    max-width: 540px;
-  }
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    margin-bottom: 2.5rem;
-  }
-  .metric {
-    background: var(--entry);
-    padding: 1rem 0.75rem;
-    text-align: center;
-    border-right: 1px solid var(--border);
-  }
-  .metric:last-child { border-right: none; }
-  .metric-num {
-    font-size: 21px;
     font-weight: 600;
     color: var(--primary);
-    letter-spacing: -0.5px;
   }
-  .metric-label {
-    font-size: 11px;
-    color: var(--secondary);
-    margin-top: 4px;
-    line-height: 1.5;
-  }
-  .section {
-    margin-bottom: 2.5rem;
-  }
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-  .section-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--secondary);
-  }
-  .section-link {
-    font-size: 12px;
-    color: var(--secondary);
-    text-decoration: none;
-  }
-  .section-link:hover { color: var(--primary); }
-  .row-list { border-top: 1px solid var(--border); }
-  .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.65rem 0;
+  .home-section-head a { font-size: 13px; }
+
+  .home-rows { margin: 0; }
+  .home-row {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 0 1.25rem;
+    padding: 0.85rem 0;
     border-bottom: 1px solid var(--border);
-    text-decoration: none;
-    color: inherit;
   }
-  a.row:hover .row-name { color: var(--primary); }
-  .row-left { display: flex; align-items: baseline; gap: 0; flex-wrap: wrap; }
-  .row-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--primary);
-    margin-right: 10px;
-  }
-  .row-desc {
-    font-size: 14px;
-    color: var(--secondary);
-  }
-  .row-meta {
-    font-size: 12px;
-    color: var(--secondary);
-    white-space: nowrap;
-    margin-left: 12px;
-  }
-  .post-title {
-    font-size: 15px;
+  .home-row dt {
+    font-weight: 600;
     color: var(--primary);
   }
-  .home-footer {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-  }
-  .footer-link {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  .home-row dd { margin: 0; }
+  .home-row-links {
+    display: block;
+    margin-top: 0.15rem;
     font-size: 13px;
-    color: var(--secondary);
-    text-decoration: none;
   }
-  .footer-link:hover { color: var(--primary); }
-  .footer-link svg {
-    width: 15px;
-    height: 15px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    flex-shrink: 0;
+  .home-row-links a + a { margin-left: 1rem; }
+
+  .home-posts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  @media (max-width: 500px) {
-    .metrics { grid-template-columns: repeat(2, 1fr); }
-    .metric:nth-child(2) { border-right: none; }
-    .metric:nth-child(1),
-    .metric:nth-child(2) { border-bottom: 1px solid var(--border); }
-    .home-headline { font-size: 22px; }
+  .home-posts li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .home-posts time {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 560px) {
+    .home { padding-top: 1.5rem; }
+    .home-row { grid-template-columns: 1fr; }
   }
 </style>
 
-<div class="home-wrap">
+<div class="home">
 
-  <p class="home-label">Hamse Abdi</p>
-  <h1 class="home-headline">AI Engineer building production<br>agentic systems on AWS.</h1>
+  <p class="home-who">Hamse Abdi <span>Software Engineer, Agentic AI, Atlanta</span></p>
+  <h1 class="home-headline">I build AI agents, the evals that gate them, and the platform they run on.</h1>
   <p class="home-bio">
-    At Travelers I replaced a manual underwriting review with a multi-agent pipeline on Bedrock. Outside work I run three deployed agents I use every day. I write about what it takes to ship agents in production — not demos.
+    At Travelers I took a generative AI pilot to production as the underwriters' daily workbench, which cut case review from roughly 6 hours to 30 minutes.
+    Then I designed and built the multi-agent renewal system that is now in pilot with early users.
   </p>
+  <p class="home-bio">
+    On my own time I build agents in the open:
+    <a href="https://github.com/hamseabd/argus">Argus</a>, a multi-agent code reviewer that reviews its own pull requests, and
+    <a href="https://github.com/hamseabd/Stride">Stride</a>, an SMS coach that texts first.
+  </p>
+  <ul class="home-links">
+    <li><a href="{{ "resume.pdf" | relURL }}">Resume (PDF)</a></li>
+    <li><a href="https://github.com/hamseabd">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/hamseabdi/">LinkedIn</a></li>
+    <li><a href="mailto:hmseabd@gmail.com">hmseabd@gmail.com</a></li>
+  </ul>
 
-  <div class="metrics">
-    <div class="metric">
-      <div class="metric-num">90%</div>
-      <div class="metric-label">underwriter<br>time saved</div>
+  <section class="home-section" aria-labelledby="home-work">
+    <div class="home-section-head">
+      <h2 id="home-work">What I build at Travelers</h2>
+      <a href="{{ "about/" | relURL }}">About me</a>
     </div>
-    <div class="metric">
-      <div class="metric-num">6h → 5m</div>
-      <div class="metric-label">referral case<br>review time</div>
-    </div>
-    <div class="metric">
-      <div class="metric-num">11</div>
-      <div class="metric-label">parallel agents<br>in production</div>
-    </div>
-    <div class="metric">
-      <div class="metric-num">$3/mo</div>
-      <div class="metric-label">3 personal agents<br>running</div>
-    </div>
-  </div>
+    <dl class="home-rows">
+      <div class="home-row">
+        <dt>Applied AI</dt>
+        <dd>The underwriting workbench, in daily use. A nightly job summarizes each policy's claim notes with citations and answers the standard review questions ahead of time.</dd>
+      </div>
+      <div class="home-row">
+        <dt>Agents</dt>
+        <dd>A multi-agent renewal system on the Strands SDK and Bedrock AgentCore: 3 supervisors and 11 evaluators, each scoring a policy on an underwriter rubric. The guardrails are code, not prompts. Agents never write to policy systems, and an underwriter approves every adverse decision.</dd>
+      </div>
+      <div class="home-row">
+        <dt>Platform</dt>
+        <dd>The eval gate every prompt and model change has to pass, on a golden dataset labeled by underwriter SMEs. Under it, a REST API platform that 3 product teams adopted, an MCP gateway with Okta for identity, and OpenTelemetry tracing.</dd>
+      </div>
+    </dl>
+  </section>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Projects</span>
-      <a class="section-link" href="https://github.com/hamseabd" target="_blank" rel="noopener">GitHub ↗</a>
+  <section class="home-section" aria-labelledby="home-projects">
+    <div class="home-section-head">
+      <h2 id="home-projects">Projects</h2>
+      <a href="https://github.com/hamseabd">All repositories</a>
     </div>
-    <div class="row-list">
-      <div class="row">
-        <div class="row-left">
-          <span class="row-name">Stride</span>
-          <span class="row-desc">SMS coach · 19 tools · eval suite in CI</span>
-        </div>
-        <span class="row-meta">$1/mo</span>
+    <dl class="home-rows">
+      <div class="home-row">
+        <dt>Argus</dt>
+        <dd>
+          Multi-agent code reviewer on the Claude Agent SDK. A lead agent hands the diff to six specialists, and a verifier tries to refute each finding before it posts.
+          <span class="home-row-links">
+            <a href="https://github.com/hamseabd/argus">Code</a>
+            <a href="{{ $argusPost.RelPermalink }}">Write-up</a>
+          </span>
+        </dd>
       </div>
-      <div class="row">
-        <div class="row-left">
-          <span class="row-name">Apex</span>
-          <span class="row-desc">Health bot · YAML-driven tool generation</span>
-        </div>
-        <span class="row-meta">$0/mo</span>
+      <div class="home-row">
+        <dt>Bosun</dt>
+        <dd>
+          Supervisor agent that turns a plain request into a spec and hands it to parallel builder agents across repos, each on its own branch. Merges, sends, and spending stay behind human approval.
+          <span class="home-row-links">Private repository</span>
+        </dd>
       </div>
-      <div class="row">
-        <div class="row-left">
-          <span class="row-name">Stock Intel</span>
-          <span class="row-desc">Market intelligence · 27 commands · 8 scanners</span>
-        </div>
-        <span class="row-meta">$3/mo</span>
+      <div class="home-row">
+        <dt>Stride</dt>
+        <dd>
+          SMS Scrum coach that texts first: a Haiku router in front of a Sonnet agent with 21 tools. 345 tests and 97 eval checks gate every pull request.
+          <span class="home-row-links">
+            <a href="https://github.com/hamseabd/Stride">Code</a>
+          </span>
+        </dd>
       </div>
-    </div>
-  </div>
+      <div class="home-row">
+        <dt>Apex</dt>
+        <dd>
+          Telegram health agent that builds its own tools from a YAML protocol at cold start. Its evals grade what lands in the database, not what the agent says.
+          <span class="home-row-links">
+            <a href="https://github.com/hamseabd/apex-agent">Code</a>
+            <a href="{{ $apexPost.RelPermalink }}">Write-up</a>
+          </span>
+        </dd>
+      </div>
+      <div class="home-row">
+        <dt>Stock Intel</dt>
+        <dd>
+          Telegram market intelligence on AWS: 27 commands and 8 scheduled scanners. 80% of the commands never call the model.
+          <span class="home-row-links">
+            <a href="https://github.com/hamseabd/stock-intel">Code</a>
+          </span>
+        </dd>
+      </div>
+    </dl>
+  </section>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Writing</span>
-      <a class="section-link" href="/posts/">All posts ↗</a>
+  <section class="home-section" aria-labelledby="home-writing">
+    <div class="home-section-head">
+      <h2 id="home-writing">Writing</h2>
+      <a href="{{ "posts/" | relURL }}">All posts</a>
     </div>
-    <div class="row-list">
-      {{- range first 5 (where .Site.RegularPages "Section" "posts") }}
-      <a class="row" href="{{ .Permalink }}">
-        <span class="post-title">{{ .Title }}</span>
-        <span class="row-meta">{{ .Date.Format "Jan 2006" }}</span>
-      </a>
+    <ul class="home-posts">
+      {{- range first 5 (where site.RegularPages "Section" "posts") }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2006" }}</time>
+      </li>
       {{- end }}
-    </div>
-  </div>
-
-  <div class="home-footer">
-    <a class="footer-link" href="https://github.com/hamseabd" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-      GitHub
-    </a>
-    <a class="footer-link" href="https://www.linkedin.com/in/hamseabdi/" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-      LinkedIn
-    </a>
-    <a class="footer-link" href="/resume.pdf" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-      Resume
-    </a>
-    <a class="footer-link" href="mailto:hmseabd@gmail.com">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      hmseabd@gmail.com
-    </a>
-  </div>
+    </ul>
+  </section>
 
 </div>
 {{- end }}
