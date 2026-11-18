@@ -15,9 +15,9 @@ hugo --minify
 ## Check links
 
 ```bash
-# Every internal link, asset, and #anchor in the built site must resolve (Python 3.12, stdlib only)
-hugo --minify
-python3.12 scripts/check_links.py public https://hamseabd.github.io/
+# Build as the deploy does, check every internal link, asset, and #anchor,
+# and confirm drafts stay out of the published build (Python 3.12, stdlib only)
+scripts/verify.sh
 
 # The checker's own tests
 python3.12 -m venv .venv && .venv/bin/python -m pip install -r requirements-dev.txt
