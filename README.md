@@ -12,7 +12,7 @@ hugo server --buildDrafts
 hugo --minify
 ```
 
-## Check links
+## Verify
 
 ```bash
 # Build as the deploy does, check every internal link, asset, and #anchor,

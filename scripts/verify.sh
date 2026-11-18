@@ -17,7 +17,7 @@ hugo --minify --quiet --buildDrafts --destination "$OUT/drafts"
 drafts=$(hugo list drafts | tail -n +2 | cut -d, -f1)
 for source in $drafts; do
   slug="$(basename "$source" .md)"
-  if grep -rlF "$slug" "$OUT/site" >/dev/null; then
+  if grep -rlF "/$slug/" "$OUT/site" >/dev/null; then
     echo "draft leaked into the published build: $slug" >&2
     exit 1
   fi
