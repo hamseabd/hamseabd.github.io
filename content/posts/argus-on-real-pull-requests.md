@@ -39,7 +39,7 @@ Where a review is public, I link it.
 **Six specialists, not three.**
 Correctness, security, tests, maintainability, design, and conventions.
 The first version had correctness, security, and a catch-all called quality.
-On the first eval run, every false positive came from quality: 0 of its 5 reported findings were real.
+On that design's eval run, every false positive came from quality: 0 of its 5 reported findings were real.
 The current version replaces it with four narrow specialists, and each prompt says what counts, what never counts, and how to look.
 
 **Findings are recorded through a tool, not retyped.**
@@ -82,6 +82,11 @@ report    terminal, JSON artifact, GitHub review with inline comments
 Argus reviews its own pull requests.
 The findings I value most are the ones against its own safety code.
 
+A note on which design found what.
+The six specialists landed on October 24.
+The four findings below are from October 2 and October 13, so the three-specialist design found them.
+The release-script finding at the top of this post is from the current one.
+
 **Any bot could have silenced it.**
 The change that taught Argus to skip findings it had already posted trusted an earlier review if its author was a bot and its body started with the Argus marker.
 GitHub reports every app as a bot.
@@ -114,6 +119,7 @@ The reusable workflow lets my other repositories call Argus.
 Some of those reviews are public, such as [apex-agent pull request 1](https://github.com/hamseabd/apex-agent/pull/1#pullrequestreview-5191356443), a grounded knowledge base for my health agent.
 
 Nine findings, all confirmed by the verifier.
+That review is from September, on the three-specialist design.
 Two of them:
 
 - The tool re-fetched the entire S3 corpus two to three times per question, and the test fake hid it, because the fake's token count did not call the loader the way the real store does.
@@ -138,6 +144,7 @@ On Argus's own repository, for the 30 days ending November 2:
 
 By specialist the picture is less even.
 Security had 10 of 11 acted on, and design had 1 of 4.
+The window spans both designs: 22 of the 55 came from the old quality specialist.
 
 [CONFIRM: across all repositories Argus reviews, the GitHub API shows 882 inline findings on 103 pull requests between September 13 and November 17, with 12 carrying a thumbs-down. That is a raw count from 2026-11-18, not `argus feedback` output. Replace it with the tool's numbers or cut it.]
 
