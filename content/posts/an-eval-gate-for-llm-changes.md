@@ -3,133 +3,117 @@ title: "An eval gate for LLM changes"
 date: 2026-11-18
 draft: true
 tags: ["evals", "llm-as-judge", "agents", "production"]
-summary: "A prompt edit or a model upgrade is a code change, and it should pass a gate before it ships. The pattern: deterministic checks on every output, a golden set on every change, and a judge from a different model family on production samples."
+summary: "A prompt or model change is a code change, so it ships through a gate that can say no. The parts: deterministic checks for what must never happen, a golden set labeled by domain experts, and a judge from a different model family watching production."
 ShowToc: true
 ShowReadingTime: true
 ---
 
-A model upgrade is the easiest change to approve.
-The diff is one line.
-No logic moves, and every unit test still passes.
+A model upgrade was ready to ship.
+The eval gate said no.
 
-I built the eval gate for a production agent system, and it caught one of those before release.
-The upgrade had regressed the system's behavior.
+[HAMSE: the regression. What got worse, how the gate showed it, and what you thought when you saw it. Describe it as a pattern, with no internal specifics.]
+
 The fix was a prompt edit.
+The regression was caught before release, so nobody who relies on that system ever saw it.
 
-A prompt edit is a code change.
-So is a model upgrade.
-Both can break behavior that no unit test covers, so both should pass a gate before they ship.
-This post is the pattern, not the system.
+I built that gate for a production agent system.
+The idea behind it is simple: a prompt or model change is a code change, so it ships through a gate that can say no.
 
-## The shape
+## Why spot checks fail
+
+Without a gate, a prompt change gets tested the way most of them do.
+Someone runs a handful of inputs, reads the outputs, and they look fine.
+
+That fails for three reasons.
+The sample is the cases the author thought of, which are the cases the prompt already handles.
+The reader is the author, who knows what the output is supposed to say.
+And a spot check has no memory.
+Nothing compares today's output with last week's, so a case that quietly got worse looks the same as one that was never good.
+
+A model upgrade makes all three worse.
+The diff is often one line, no logic moves, and every unit test still passes.
+There is nothing to review except behavior.
+
+## Three parts
 
 ![The three layers of an eval gate. A change to a prompt, a model, or code passes deterministic checks on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output and does not gate, and what it finds becomes new golden cases.](/images/posts/an-eval-gate-for-llm-changes/gate.svg)
 
-Three layers.
-Each catches a different kind of failure, and none of them is enough alone.
+**Deterministic checks, for what must never happen.**
+Start with what code can decide.
+The output has to match its schema.
+Every claim has to carry a citation.
+A value has to sit inside the range the system is allowed to produce.
+These checks are cheap and never flaky, so they run on every output, in tests and in production.
+Anything code can decide shouldn't go to a model.
 
-| Layer | Runs on | Catches |
-|---|---|---|
-| Deterministic checks | every output | broken structure, missing fields, rules the output must never break |
-| Golden set | every change | regressions in what the system decides |
-| Cross-family judge | samples of production output | quality drift the golden set does not cover |
-
-## Deterministic checks
-
-Start with what code can check.
-
-- Is the output valid against its schema?
-- Does every claim carry a citation?
-- Is each value inside the range the system is allowed to produce?
-
-These checks are cheap, fast, and never flaky.
-They run on every output, in tests and in production.
-
-The rule: anything code can decide should not go to a model.
-Every check moved from a judge to an assertion is one less thing that can drift.
-
-## The golden set
-
+**A golden set, labeled by domain experts.**
 A golden set is a fixed list of inputs with known right answers.
-The answers come from the people who do the work today, not from the model.
-Domain experts label them.
+The answers come from the people who do the work today, not from the model and not from me.
+It measures what the system decides, which is the thing a regression changes.
 
-The gate runs a subset on every pull request and the full set on every release.
-The pull request run is small enough to wait for.
-The release run is complete enough to trust.
+**A judge from a different model family.**
+Some quality has no single right answer.
+For that, a model grades the output against a rubric.
+The judge comes from a different family than the system it grades, because a judge from the same family tends to share its blind spots and to prefer answers that sound like its own.
 
-In the system I built, every pull request runs 100 cases and every release runs all of them, more than 1,000.
-[CONFIRM: these sizes are from your resume. Keep them, or cut the sentence if they are too specific for a pattern post.]
+## On every pull request
 
-Three rules make the golden set a gate and not a dashboard.
+A subset of the golden set runs on every pull request, and all of it runs on every release.
+The first is small enough to wait for.
+The second is complete enough to trust.
 
-**Compare with a baseline, not with a target.**
-A change passes when it holds the baseline.
-It fails when it gets cases wrong that the baseline got right.
-An absolute bar such as "90% or better" lets a change trade ten old cases for ten new ones and still pass.
+Three rules turn that from a report into a gate.
 
-**Count case by case.**
-A new catch on one case does not offset a new miss on another.
-The misses are what users feel.
+**Compare with the baseline, case by case.**
+A change passes when it holds what the last accepted run got right.
+A fixed bar such as "90% or better" lets a change trade ten old cases for ten new ones and still pass.
+A new catch on one case doesn't pay for a new miss on another.
 
 **Give noise a number.**
-A model's output varies between runs, so one review of a case is one sample.
+A model's output varies between runs, so one run of a case is one sample.
 Decide ahead of time how much variation is noise, write it down, and fail on anything past it.
 
-## Keep the gate out of reach
-
-The gate must not be editable by the change it judges.
-
-The cases, the scorer, the baseline, and the thresholds should come from the default branch, not from the pull request.
+**Keep the gate out of the change's reach.**
+The cases, the scorer, the baseline, and the thresholds come from the default branch, not from the pull request.
 Otherwise a change can loosen the gate it has to pass.
+And the gate fails closed: a case that errors is a failure, not a skip.
 
-The gate should also fail closed.
-A case that errors is a failure, not a skip.
-A result the gate cannot read is a failure too.
+My code reviewer, [Argus](https://github.com/hamseabd/argus), gates its own pull requests this way, and its [whole policy](https://github.com/hamseabd/argus/blob/main/evals/thresholds.yaml) is public.
+It runs nine cases on every change to the reviewer: one seeded bug per specialist, two clean changes that should draw nothing, and one trap.
+It allows one extra miss beyond the baseline, because one is noise and two is a regression.
+It allows no new finding on a clean change.
 
-My code reviewer, [Argus](https://github.com/hamseabd/argus), gates its own pull requests this way, and its thresholds are public.
-The [whole policy](https://github.com/hamseabd/argus/blob/main/evals/thresholds.yaml) is three settings:
-
-- a fixed smoke subset: one seeded bug per specialist, two clean controls, and one trap,
-- at most one extra miss beyond the baseline, because one is noise and two is a regression,
-- no new finding on a clean control.
-
-Clean controls matter as much as the bugs.
+The clean cases matter as much as the bugs.
 A gate that only checks what the system should catch will pass a change that makes it flag everything.
 
-## A judge from a different family
+## Watching production
 
-Some quality has no right answer to compare against.
-For that, a model grades the output against a rubric.
+A gate only sees the cases someone wrote down.
+Production sees everything else.
 
-The judge comes from a different model family than the system it grades.
-A judge from the same family tends to share the same blind spots, and to prefer outputs that sound like its own.
+So the judge samples live output.
+It doesn't block anything.
+It shows when quality moves, and what it finds becomes new golden cases.
+That is how the golden set keeps up with real traffic, and how a problem seen once in production becomes a test that runs on every change after it.
 
-The judge samples production output.
-It does not gate a pull request.
-It tells you when quality moves, and what it finds becomes new golden cases.
-That is how the golden set keeps up with real traffic.
+The deterministic checks run in production too, on every output.
+The same rule that fails a test also flags a live answer.
 
-## The regression it caught
+## What I learned
 
-A model upgrade caused a regression.
-The gate caught it before release.
+**A gate has to be able to say no.**
+A dashboard that shows a score dropping is information. A check that blocks the merge is a decision, made before anyone is tempted to ship anyway.
 
-[CONFIRM: what the regression was, described as a pattern with no internal specifics, if you want to say it.]
+**A failing eval is a hypothesis.**
+I learned this on [a side project]({{< ref "apex-evals-grading-what-it-does" >}}), where an ugly failure turned out to be a bug in my grader. The first question on any failure is whether the system is wrong or the test is.
 
-The fix was a prompt edit.
+**The baseline is the bar.**
+"Is it good?" has no stable answer for a model. "Did it get worse than what we accepted last time?" does.
 
-That is the case for the gate.
-Without it, the upgrade ships, and the regression is found by the people who rely on the output.
+**Use a model to judge only what code can't.**
+Every check that moves from a judge to an assertion is one less thing that can drift, and one less thing to pay for.
 
-## Where to start
+[HAMSE: a hard-won eval lesson. One thing you got wrong building this, or believed before and don't now.]
 
-1. Write the deterministic checks first. They are the cheapest, and they never lie.
-2. Build the golden set from real cases, labeled by the people who know the right answer.
-3. Run a subset on every change and all of it on every release.
-4. Compare with a baseline, case by case, with a stated tolerance for noise.
-5. Take the gate's inputs from the default branch, and fail closed.
-6. Use a judge from another model family, on samples, to find what the golden set misses.
-
-If you are putting evals on a production agent, I would like to compare notes.
+If you're putting evals on a production agent, I'd like to compare notes.
 [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).
