@@ -303,7 +303,7 @@ The corpus is 32 cases, and the baseline is a single trial.
 A review costs more quota than it did, because there are twice the specialists and every agent runs on Opus at high effort.
 
 None of that is hidden.
-The README is the design doc, and [`evals/report.md`](https://github.com/hamseabd/argus/blob/main/evals/report.md) is the full run behind the table above.
+The README is the design doc, and [`evals/report.md`](https://github.com/hamseabd/argus/blob/main/evals/report.md) is the full run behind the current column above.
 
 If you are building agents that have to earn trust inside a real engineering workflow, I would like to compare notes.
 [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).

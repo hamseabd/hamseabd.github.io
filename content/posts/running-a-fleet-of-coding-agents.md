@@ -9,7 +9,7 @@ ShowReadingTime: true
 ---
 
 Three coding agents are at work in three repositories.
-None of them merges.
+None of them merges its own work.
 None of them can write outside its own worktree.
 The process watching them spends no tokens.
 
