@@ -1,219 +1,80 @@
 {{- define "main" }}
 {{- $argusPost := site.GetPage "/posts/argus-code-review-agent" }}
-{{- $apexPost := site.GetPage "/posts/apex-evals-grading-what-it-does" }}
-<style>
-  .home {
-    padding: 2.5rem 0 1rem;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--secondary);
-  }
-  .home a {
-    color: var(--primary);
-    text-decoration: underline;
-    text-decoration-color: var(--tertiary);
-    text-underline-offset: 3px;
-  }
-  .home a:hover { text-decoration-color: var(--primary); }
-  .home a:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
+<div class="site-page">
 
-  .home-who {
-    margin: 0 0 0.75rem;
-    color: var(--primary);
-    font-weight: 600;
-  }
-  .home-who span {
-    color: var(--secondary);
-    font-weight: 400;
-  }
-  .home-headline {
-    margin: 0 0 1.25rem;
-    font-size: clamp(28px, 6vw, 40px);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: var(--primary);
-    text-wrap: balance;
-  }
-  .home-bio {
-    max-width: 62ch;
-    margin: 0 0 0.9rem;
-  }
-  .home-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1.5rem;
-    margin: 1.4rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .home-section { margin-top: 3rem; }
-  .home-section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .home-section-head h2 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--primary);
-  }
-  .home-section-head a { font-size: 13px; }
-
-  .home-rows { margin: 0; }
-  .home-row {
-    display: grid;
-    grid-template-columns: 7rem 1fr;
-    gap: 0 1.25rem;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .home-row dt {
-    font-weight: 600;
-    color: var(--primary);
-  }
-  .home-row dd { margin: 0; }
-  .home-row-links {
-    display: block;
-    margin-top: 0.15rem;
-    font-size: 13px;
-  }
-  .home-row-links a + a { margin-left: 1rem; }
-
-  .home-posts {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .home-posts li {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    padding: 0.7rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .home-posts time {
-    font-size: 13px;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 560px) {
-    .home { padding-top: 1.5rem; }
-    .home-row { grid-template-columns: 1fr; }
-  }
-</style>
-
-<div class="home">
-
-  <p class="home-who">Hamse Abdi <span>Software Engineer, Agentic AI, Atlanta</span></p>
-  <h1 class="home-headline">I build AI agents, the evals that gate them, and the platform they run on.</h1>
-  <p class="home-bio">
-    At Travelers I took a generative AI pilot to production as the underwriters' daily workbench, which cut case review from roughly 6 hours to 30 minutes.
-    Then I designed and built the multi-agent renewal system that is now in pilot with early users.
+  <p class="site-page-who">Hamse Abdi, Software Engineer, Agentic AI, Atlanta</p>
+  <h1>I build AI agents, the evals that gate them, and the platform they run on.</h1>
+  <p>
+    At Travelers I took a generative AI pilot to production as the underwriters' daily workbench.
+    On my own time I build agents in the open, like
+    <a href="https://github.com/hamseabd/argus">Argus</a> and
+    <a href="https://github.com/hamseabd/Stride">Stride</a>.
   </p>
-  <p class="home-bio">
-    On my own time I build agents in the open:
-    <a href="https://github.com/hamseabd/argus">Argus</a>, a multi-agent code reviewer that reviews its own pull requests, and
-    <a href="https://github.com/hamseabd/Stride">Stride</a>, an SMS coach that texts first.
-  </p>
-  <ul class="home-links">
-    <li><a href="{{ "resume.pdf" | relURL }}">Resume (PDF)</a></li>
+  <ul class="site-page-links">
+    <li><a href="{{ "resume.pdf" | relURL }}">Resume</a></li>
     <li><a href="https://github.com/hamseabd">GitHub</a></li>
     <li><a href="https://www.linkedin.com/in/hamseabdi/">LinkedIn</a></li>
     <li><a href="mailto:hmseabd@gmail.com">hmseabd@gmail.com</a></li>
   </ul>
 
-  <section class="home-section" aria-labelledby="home-work">
-    <div class="home-section-head">
-      <h2 id="home-work">What I build at Travelers</h2>
-      <a href="{{ "about/" | relURL }}">About me</a>
-    </div>
-    <dl class="home-rows">
-      <div class="home-row">
-        <dt>Applied AI</dt>
-        <dd>The underwriting workbench, in daily use. A nightly job summarizes each policy's claim notes with citations and answers the standard review questions ahead of time.</dd>
-      </div>
-      <div class="home-row">
-        <dt>Agents</dt>
-        <dd>A multi-agent renewal system on the Strands SDK and Bedrock AgentCore: 3 supervisors and 11 evaluators, each scoring a policy on an underwriter rubric. The guardrails are code, not prompts. Agents never write to policy systems, and an underwriter approves every adverse decision.</dd>
-      </div>
-      <div class="home-row">
-        <dt>Platform</dt>
-        <dd>The eval gate every prompt and model change has to pass, on a golden dataset labeled by underwriter SMEs. Under it, a REST API platform that 3 product teams adopted, an MCP gateway with Okta for identity, and OpenTelemetry tracing.</dd>
-      </div>
+  <section aria-labelledby="home-work">
+    <h2 id="home-work">At Travelers</h2>
+    <dl>
+      <dt>Applied AI</dt>
+      <dd>
+        <strong>Case review cut from roughly 6 hours to 30 minutes.</strong>
+        A generative AI pilot, taken to production as the underwriters' daily workbench.
+      </dd>
+      <dt>Agents</dt>
+      <dd>
+        <strong>A multi-agent renewal system, now in pilot with early users.</strong>
+        Guardrails in code, not prompts. An underwriter approves every adverse decision.
+      </dd>
+      <dt>Platform</dt>
+      <dd>
+        <strong>An eval gate every prompt and model change has to pass.</strong>
+        It caught a model-upgrade regression before release. Agent tools run through an MCP gateway.
+      </dd>
     </dl>
   </section>
 
-  <section class="home-section" aria-labelledby="home-projects">
-    <div class="home-section-head">
-      <h2 id="home-projects">Projects</h2>
-      <a href="https://github.com/hamseabd">All repositories</a>
-    </div>
-    <dl class="home-rows">
-      <div class="home-row">
-        <dt>Argus</dt>
-        <dd>
-          Multi-agent code reviewer on the Claude Agent SDK. A lead agent hands the diff to six specialists, and a verifier tries to refute each finding before it posts.
-          <span class="home-row-links">
-            <a href="https://github.com/hamseabd/argus">Code</a>
-            <a href="{{ $argusPost.RelPermalink }}">Write-up</a>
-          </span>
-        </dd>
-      </div>
-      <div class="home-row">
-        <dt>Bosun</dt>
-        <dd>
-          Supervisor agent that turns a plain request into a spec and hands it to parallel builder agents across repos, each on its own branch. Merges, sends, and spending stay behind human approval.
-          <span class="home-row-links">Private repository</span>
-        </dd>
-      </div>
-      <div class="home-row">
-        <dt>Stride</dt>
-        <dd>
-          SMS Scrum coach that texts first: a Haiku router in front of a Sonnet agent with 21 tools. 345 tests and 97 eval checks gate every pull request.
-          <span class="home-row-links">
-            <a href="https://github.com/hamseabd/Stride">Code</a>
-          </span>
-        </dd>
-      </div>
-      <div class="home-row">
-        <dt>Apex</dt>
-        <dd>
-          Telegram health agent that builds its own tools from a YAML protocol at cold start. Its evals grade what lands in the database, not what the agent says.
-          <span class="home-row-links">
-            <a href="https://github.com/hamseabd/apex-agent">Code</a>
-            <a href="{{ $apexPost.RelPermalink }}">Write-up</a>
-          </span>
-        </dd>
-      </div>
-      <div class="home-row">
-        <dt>Stock Intel</dt>
-        <dd>
-          Telegram market intelligence on AWS: 27 commands and 8 scheduled scanners. 80% of the commands never call the model.
-          <span class="home-row-links">
-            <a href="https://github.com/hamseabd/stock-intel">Code</a>
-          </span>
-        </dd>
-      </div>
+  <section aria-labelledby="home-projects">
+    <h2 id="home-projects">Projects</h2>
+    <dl>
+      <dt>Argus</dt>
+      <dd>
+        <strong>Catches 21 of 22 seeded bugs on its 32-case eval corpus.</strong>
+        Multi-agent code reviewer. A verifier tries to refute each finding before it posts.
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/argus">Code</a>
+          <a href="{{ $argusPost.RelPermalink }}">Write-up</a>
+        </span>
+      </dd>
+      <dt>Bosun</dt>
+      <dd>
+        <strong>Turns a plain request into a spec, then into parallel builder agents across repos.</strong>
+        Merges, sends, and spending stay behind human approval.
+        <span class="site-page-meta">Private repository</span>
+      </dd>
+      <dt>Stride</dt>
+      <dd>
+        <strong>14,004 scheduler runs with zero errors in private beta, at two cents a turn.</strong>
+        SMS Scrum coach that texts first. 345 tests and 97 eval checks gate every pull request.
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/Stride">Code</a>
+        </span>
+      </dd>
+      <dt>Also</dt>
+      <dd>
+        <a href="https://github.com/hamseabd/apex-agent">Apex</a> and
+        <a href="https://github.com/hamseabd/stock-intel">Stock Intel</a>, on GitHub.
+      </dd>
     </dl>
   </section>
 
-  <section class="home-section" aria-labelledby="home-writing">
-    <div class="home-section-head">
-      <h2 id="home-writing">Writing</h2>
-      <a href="{{ "posts/" | relURL }}">All posts</a>
-    </div>
-    <ul class="home-posts">
+  <section aria-labelledby="home-writing">
+    <h2 id="home-writing">Writing</h2>
+    <ul class="site-page-posts">
       {{- range first 5 (where site.RegularPages "Section" "posts") }}
       <li>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
