@@ -1,0 +1,11 @@
+{{- define "main" }}
+<div class="site-page">
+  <h1>Page not found.</h1>
+  <p>Nothing lives at this address. It may have moved.</p>
+  <ul class="site-page-links">
+    <li><a href="{{ "" | relURL }}">Home</a></li>
+    <li><a href="{{ "posts/" | relURL }}">Posts</a></li>
+    <li><a href="{{ "about/" | relURL }}">About</a></li>
+  </ul>
+</div>
+{{- end }}
