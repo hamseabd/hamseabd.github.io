@@ -1,239 +1,130 @@
 {{- define "main" }}
-<style>
-  .home-wrap {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 3rem var(--gap);
-  }
-  .home-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--secondary);
-    margin: 0 0 0.6rem;
-  }
-  .home-headline {
-    font-size: 26px;
-    font-weight: 600;
-    line-height: 1.3;
-    margin: 0 0 1rem;
-    color: var(--primary);
-  }
-  .home-bio {
-    font-size: 15px;
-    line-height: 1.75;
-    color: var(--secondary);
-    margin: 0 0 2rem;
-    max-width: 540px;
-  }
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    margin-bottom: 2.5rem;
-  }
-  .metric {
-    background: var(--entry);
-    padding: 1rem 0.75rem;
-    text-align: center;
-    border-right: 1px solid var(--border);
-  }
-  .metric:last-child { border-right: none; }
-  .metric-num {
-    font-size: 21px;
-    font-weight: 600;
-    color: var(--primary);
-    letter-spacing: -0.5px;
-  }
-  .metric-label {
-    font-size: 11px;
-    color: var(--secondary);
-    margin-top: 4px;
-    line-height: 1.5;
-  }
-  .section {
-    margin-bottom: 2.5rem;
-  }
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-  .section-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--secondary);
-  }
-  .section-link {
-    font-size: 12px;
-    color: var(--secondary);
-    text-decoration: none;
-  }
-  .section-link:hover { color: var(--primary); }
-  .row-list { border-top: 1px solid var(--border); }
-  .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.65rem 0;
-    border-bottom: 1px solid var(--border);
-    text-decoration: none;
-    color: inherit;
-  }
-  a.row:hover .row-name { color: var(--primary); }
-  .row-left { display: flex; align-items: baseline; gap: 0; flex-wrap: wrap; }
-  .row-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--primary);
-    margin-right: 10px;
-  }
-  .row-desc {
-    font-size: 14px;
-    color: var(--secondary);
-  }
-  .row-meta {
-    font-size: 12px;
-    color: var(--secondary);
-    white-space: nowrap;
-    margin-left: 12px;
-  }
-  .post-title {
-    font-size: 15px;
-    color: var(--primary);
-  }
-  .home-footer {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-  }
-  .footer-link {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 13px;
-    color: var(--secondary);
-    text-decoration: none;
-  }
-  .footer-link:hover { color: var(--primary); }
-  .footer-link svg {
-    width: 15px;
-    height: 15px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    flex-shrink: 0;
-  }
-  @media (max-width: 500px) {
-    .metrics { grid-template-columns: repeat(2, 1fr); }
-    .metric:nth-child(2) { border-right: none; }
-    .metric:nth-child(1),
-    .metric:nth-child(2) { border-bottom: 1px solid var(--border); }
-    .home-headline { font-size: 22px; }
-  }
-</style>
+{{- $argusPost := site.GetPage "/posts/argus-code-review-agent" }}
+{{- $apexPost := site.GetPage "/posts/apex-evals-grading-what-it-does" }}
+<div class="site-page">
 
-<div class="home-wrap">
-
-  <p class="home-label">Hamse Abdi</p>
-  <h1 class="home-headline">AI Engineer building production<br>agentic systems on AWS.</h1>
-  <p class="home-bio">
-    At Travelers I replaced a manual underwriting review with a multi-agent pipeline on Bedrock. Outside work I run three deployed agents I use every day. I write about what it takes to ship agents in production — not demos.
+  <p class="site-page-who"><span>{{ site.Params.role }}</span><span>Atlanta, GA</span></p>
+  <h1>I build AI agents, the evals that gate them, and the platform they run on.</h1>
+  <p>
+    At Travelers I took a generative AI pilot to production as the underwriters' daily workbench.
+    On my own time I build agents in the open, like
+    <a href="https://github.com/hamseabd/argus">Argus</a> and
+    <a href="https://github.com/hamseabd/Stride">Stride</a>.
   </p>
+  <ul class="site-page-links">
+    <li><a href="{{ "resume.pdf" | relURL }}">Resume</a></li>
+    <li><a href="https://github.com/hamseabd">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/hamseabdi/">LinkedIn</a></li>
+    <li><a href="mailto:hmseabd@gmail.com">hmseabd@gmail.com</a></li>
+  </ul>
 
-  <div class="metrics">
-    <div class="metric">
-      <div class="metric-num">90%</div>
-      <div class="metric-label">underwriter<br>time saved</div>
-    </div>
-    <div class="metric">
-      <div class="metric-num">6h → 5m</div>
-      <div class="metric-label">referral case<br>review time</div>
-    </div>
-    <div class="metric">
-      <div class="metric-num">11</div>
-      <div class="metric-label">parallel agents<br>in production</div>
-    </div>
-    <div class="metric">
-      <div class="metric-num">$3/mo</div>
-      <div class="metric-label">3 personal agents<br>running</div>
-    </div>
-  </div>
+  <section aria-labelledby="home-work">
+    <h2 id="home-work">At Travelers</h2>
+    <dl>
+      <dt>Applied AI</dt>
+      <dd>
+        <strong>Case review cut from roughly 6 hours to 30 minutes.</strong>
+        A Python and FastAPI service, run as a nightly batch, summarizes each policy's claim notes with citations and answers the standard review questions ahead of time. It went out through shadow mode and a pilot group.
+      </dd>
+      <dt>Agents</dt>
+      <dd>
+        <strong>A multi-agent renewal system, now in pilot with early users.</strong>
+        Built on the Strands SDK and Bedrock AgentCore. A nightly batch over every policy up for renewal replaced an on-demand agent, so each decision is reproducible and auditable. Agents never write to policy systems, and an underwriter approves every adverse decision.
+      </dd>
+      <dt>Platform</dt>
+      <dd>
+        <strong>An eval gate every prompt and model change has to pass.</strong>
+        A golden dataset labeled by underwriter SMEs runs on every pull request, and a judge model from a different model family samples production output. The gate caught a model-upgrade regression before release. Agent tools go through an MCP gateway, with Okta for identity.
+      </dd>
+    </dl>
+  </section>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Projects</span>
-      <a class="section-link" href="https://github.com/hamseabd" target="_blank" rel="noopener">GitHub ↗</a>
-    </div>
-    <div class="row-list">
-      <div class="row">
-        <div class="row-left">
-          <span class="row-name">Stride</span>
-          <span class="row-desc">SMS coach · 19 tools · eval suite in CI</span>
-        </div>
-        <span class="row-meta">$1/mo</span>
-      </div>
-      <div class="row">
-        <div class="row-left">
-          <span class="row-name">Apex</span>
-          <span class="row-desc">Health bot · YAML-driven tool generation</span>
-        </div>
-        <span class="row-meta">$0/mo</span>
-      </div>
-      <div class="row">
-        <div class="row-left">
-          <span class="row-name">Stock Intel</span>
-          <span class="row-desc">Market intelligence · 27 commands · 8 scanners</span>
-        </div>
-        <span class="row-meta">$3/mo</span>
-      </div>
-    </div>
-  </div>
+  <section aria-labelledby="home-projects">
+    <h2 id="home-projects">Projects</h2>
+    <dl>
+      <dt>Argus</dt>
+      <dd>
+        <strong>Catches 21 of 22 seeded bugs on its 32-case eval corpus.</strong>
+        A lead agent on the Claude Agent SDK hands the diff to 6 specialist subagents, and a verifier tries to refute each finding before it posts. It runs as a GitHub Action at $0 a review, on a Claude subscription token.
+        <svg class="site-page-diagram" viewBox="0 0 440 136" role="img" aria-labelledby="argus-flow">
+          <title id="argus-flow">A diff goes to a lead agent, which hands it to six specialists. A verifier checks every finding before the review posts.</title>
+          <g class="site-page-diagram-lines">
+            <path d="M6 56H113M327 56H434"/>
+            <path d="M113 56L220 16M113 56L220 32M113 56L220 48M113 56L220 64M113 56L220 80M113 56L220 96"/>
+            <path d="M220 16L327 56M220 32L327 56M220 48L327 56M220 64L327 56M220 80L327 56M220 96L327 56"/>
+          </g>
+          <g class="site-page-diagram-ends">
+            <circle cx="6" cy="56" r="5"/>
+            <circle cx="434" cy="56" r="5"/>
+          </g>
+          <g class="site-page-diagram-agents">
+            <circle cx="113" cy="56" r="6"/>
+            <circle cx="220" cy="16" r="4"/>
+            <circle cx="220" cy="32" r="4"/>
+            <circle cx="220" cy="48" r="4"/>
+            <circle cx="220" cy="64" r="4"/>
+            <circle cx="220" cy="80" r="4"/>
+            <circle cx="220" cy="96" r="4"/>
+            <circle cx="327" cy="56" r="6"/>
+          </g>
+          <g class="site-page-diagram-labels">
+            <text x="0" y="128" text-anchor="start">Diff</text>
+            <text x="113" y="128">Lead</text>
+            <text x="220" y="128">6 specialists</text>
+            <text x="327" y="128">Verifier</text>
+            <text x="440" y="128" text-anchor="end">Review</text>
+          </g>
+        </svg>
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/argus">Code</a>
+          <a href="{{ $argusPost.RelPermalink }}">Write-up</a>
+        </span>
+      </dd>
+      <dt>Bosun</dt>
+      <dd>
+        <strong>Turns a plain request into a spec, then into parallel builder agents across repos.</strong>
+        It watches CI and Argus reviews and sends findings back to the builders for fix rounds. Hooks and permission rules fence agent writes, a lease lets only one supervisor act at a time, and merges, sends, and spending wait for human approval.
+        <span class="site-page-meta">Private repository</span>
+      </dd>
+      <dt>Stride</dt>
+      <dd>
+        <strong>14,004 scheduler runs with zero errors in private beta, at two cents a turn.</strong>
+        An SMS coach that texts first. A no-model scheduler decides when, and a Haiku router sits in front of a Sonnet agent with 21 tools. 345 tests and 97 eval checks gate every pull request.
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/Stride">Code</a>
+        </span>
+      </dd>
+      <dt>Apex</dt>
+      <dd>
+        <strong>Add a metric to a YAML file and the agent gains a tool at the next cold start.</strong>
+        A Telegram health agent on Strands and Claude through Bedrock, with single-table DynamoDB. Its eval suite passed 66 of 66 runs.
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/apex-agent">Code</a>
+          <a href="{{ $apexPost.RelPermalink }}">Write-up</a>
+        </span>
+      </dd>
+      <dt>Stock Intel</dt>
+      <dd>
+        <strong>80% of its 27 commands never call the model.</strong>
+        Telegram market intelligence on Lambda, DynamoDB, SQS, and EventBridge. 8 scheduled scanners push alerts, and it runs for about $1 to $3 a month.
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/stock-intel">Code</a>
+        </span>
+      </dd>
+    </dl>
+  </section>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Writing</span>
-      <a class="section-link" href="/posts/">All posts ↗</a>
-    </div>
-    <div class="row-list">
-      {{- range first 5 (where .Site.RegularPages "Section" "posts") }}
-      <a class="row" href="{{ .Permalink }}">
-        <span class="post-title">{{ .Title }}</span>
-        <span class="row-meta">{{ .Date.Format "Jan 2006" }}</span>
-      </a>
+  <section aria-labelledby="home-writing">
+    <h2 id="home-writing">Writing</h2>
+    <ul class="site-page-posts">
+      {{- range first 5 (where site.RegularPages "Section" "posts") }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2006" }}</time>
+      </li>
       {{- end }}
-    </div>
-  </div>
-
-  <div class="home-footer">
-    <a class="footer-link" href="https://github.com/hamseabd" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-      GitHub
-    </a>
-    <a class="footer-link" href="https://www.linkedin.com/in/hamseabdi/" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-      LinkedIn
-    </a>
-    <a class="footer-link" href="/resume.pdf" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-      Resume
-    </a>
-    <a class="footer-link" href="mailto:hmseabd@gmail.com">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      hmseabd@gmail.com
-    </a>
-  </div>
+    </ul>
+  </section>
 
 </div>
 {{- end }}
