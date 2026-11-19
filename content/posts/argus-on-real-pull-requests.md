@@ -82,7 +82,7 @@ Where a review is public, I link it.
 **Six specialists, not three.**
 Correctness, security, tests, maintainability, design, and conventions.
 The first version had correctness, security, and a catch-all called quality.
-On that design's eval run, every false positive came from quality: 0 of its 5 reported findings were real.
+On that design's eval run, on October 24, 2026, every false positive came from quality: 0 of its 5 reported findings were real.
 Four narrow specialists replaced it.
 Each prompt says what counts, what never counts, and how to look.
 
@@ -109,7 +109,7 @@ Rejected findings stay visible in a folded list, with the verifier's reason.
 **It remembers its earlier reviews.**
 A re-review covers only the commits since the last one.
 A finding it already posted is marked `known` and not posted again.
-One I gave a thumbs-down is `dismissed`.
+One I gave a thumbs-down is `dismissed`, in a change that landed after the current public release.
 
 **The repository's own rules reach every agent.**
 `REVIEW.md` and `CLAUDE.md` are read from a branch the change cannot touch.
@@ -157,7 +157,7 @@ That finding is now a case in the eval corpus, snapshotted from the pull request
 Four high-severity findings in the reviewer's own machinery.
 Each was fixed on the branch that introduced it.
 
-[CONFIRM: the line saying you read these four diffs yourself before Argus flagged them. Your call to include, and your wording.]
+[CONFIRM: "I had read all four diffs before Argus flagged them, and I missed all four." Keep, reword, or cut. Only you know if it is true.]
 
 ## What it found in someone else's code
 
@@ -213,7 +213,8 @@ Acted on is not the same as right.
 Every review ends with a machine-readable block that hands its findings to a fixer agent.
 Fixer agents handle the routine findings.
 I fix every medium and above myself.
-An agent told to fix something will usually fix it, so I do not read 46 of 55 as precision.
+An agent told to fix something will usually fix it, so the low and nit rows say more about obedience than accuracy.
+I do not read 46 of 55 as precision.
 
 For that I built an eval.
 
@@ -226,9 +227,8 @@ The corpus is 32 small repositories with known answers.
 A finding matches a seeded bug when it names the same category and lands within three lines of it.
 
 Both columns are single runs.
-The current one is from November 2, 2026.
 
-| | September design | Current design |
+| | Three specialists, October 24, 2026 | Six specialists, November 2, 2026 |
 |---|---|---|
 | Corpus | 13 cases | 32 cases |
 | Recall | 100% (10 of 10) | 95% (21 of 22) |
@@ -303,7 +303,7 @@ The corpus is 32 cases, and the baseline is a single trial.
 A review costs more quota than it did, because there are twice the specialists and every agent runs on Opus at high effort.
 
 None of that is hidden.
-The README is the design doc, and [`evals/report.md`](https://github.com/hamseabd/argus/blob/main/evals/report.md) is the full run behind the current column above.
+The README is the design doc, and [`evals/report.md`](https://github.com/hamseabd/argus/blob/main/evals/report.md) is the full run behind the November 2 column.
 
 If you are building agents that have to earn trust inside a real engineering workflow, I would like to compare notes.
 [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).
