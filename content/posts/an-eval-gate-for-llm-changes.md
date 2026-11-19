@@ -9,109 +9,100 @@ ShowReadingTime: true
 ---
 
 A model upgrade was ready to ship.
-The eval gate said no.
+The eval gate failed it.
 
-[CONFIRM: what the regression was, as a pattern with no internal specifics. Your resume says only that a model upgrade regressed and the gate caught it before release.]
+[CONFIRM: what broke, as a pattern with no internal specifics: what got worse, and which part of the gate caught it. Your resume says only that a model upgrade regressed and the gate caught it before release.]
 
-The fix was a prompt edit.
-The regression was caught before release, so nobody who relies on that system ever saw it.
+A prompt edit fixed it, and the regression never reached a release.
 
-I built that gate for a production agent system.
-The idea behind it is simple: a prompt or model change is a code change, so it ships through a gate that can say no.
+I built that gate for a production system, and every prompt and model change has to pass it.
+A prompt or model change is a code change, so it ships through a gate that can say no.
 
 ## Why spot checks fail
 
-Without a gate, a prompt change gets tested the way most of them do.
+Most prompt changes get a spot check.
 Someone runs a handful of inputs, reads the outputs, and they look fine.
 
-That fails for three reasons.
 The sample is the cases the author thought of, which are the cases the prompt already handles.
 The reader is the author, who knows what the output is supposed to say.
 And a spot check has no memory.
 Nothing compares today's output with last week's, so a case that quietly got worse looks the same as one that was never good.
 
-A model upgrade makes all three worse.
-The diff is often one line, no logic moves, and every unit test still passes.
-There is nothing to review except behavior.
+A model upgrade is worse.
+The diff is one line and every unit test passes.
+There is nothing to review except behavior, and that was the change the gate failed.
 
 ## Three parts
 
-![The three layers of an eval gate. A change to a prompt, a model, or code passes deterministic checks on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output and does not gate, and what it finds becomes new golden cases.](/images/posts/an-eval-gate-for-llm-changes/gate.svg)
+![The three layers of an eval gate. A change to a prompt, a model, or code passes deterministic checks on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output, and what it finds can become new golden cases.](/images/posts/an-eval-gate-for-llm-changes/gate.svg)
 
 **Deterministic checks, for what must never happen.**
 Start with what code can decide.
-The output has to match its schema.
-Every claim has to carry a citation.
-A value has to sit inside the range the system is allowed to produce.
-These checks are cheap and never flaky, so they run on every output, in tests and in production.
-Anything code can decide shouldn't go to a model.
+The output matches its schema.
+A citation points at something that exists.
+A value sits inside the range the system is allowed to produce.
+The check never varies, so a failure belongs to the output.
+These run on every output.
 
 **A golden set, labeled by domain experts.**
-A golden set is a fixed list of inputs with known right answers.
-The answers come from the people who do the work today, not from the model and not from me.
-It measures what the system decides, which is the thing a regression changes.
+A golden set is a list of inputs with right answers that subject matter experts wrote down.
+A subset runs on every pull request, and all of it runs on every release.
+It measures what the system decides, which is what a regression changes.
 
 **A judge from a different model family.**
-Some quality has no single right answer.
-For that, a model grades the output against a rubric.
-The judge comes from a different family than the system it grades, because a judge from the same family tends to share its blind spots and to prefer answers that sound like its own.
+Some outputs have no single right answer, so a model grades them against a rubric.
+The judge comes from a different family than the system it grades, so it doesn't favor answers that sound like its own.
+It samples production output.
 
-## On every pull request
+A different family only fixes that one bias.
+A judge still has to be checked against expert labels, and I have a recent reminder of why.
+In my code reviewer, the agent that checks each finding confirmed all 21 of the unmatched findings it saw on its eval run of November 2, 2026.
+I only know because that agent is scored on its own.
 
-A subset of the golden set runs on every pull request, and all of it runs on every release.
-The first is small enough to wait for.
-The second is complete enough to trust.
+## What makes it a gate
 
-Three rules turn that from a report into a gate.
+A score on a dashboard gets read after the release.
+A failed check gets read before it.
+
+The rules below are from [Argus](https://github.com/hamseabd/argus), my code reviewer, because its [gate policy](https://github.com/hamseabd/argus/blob/main/evals/thresholds.yaml) is public and you can read every line.
 
 **Compare with the baseline, case by case.**
 A change passes when it holds what the last accepted run got right.
 A fixed bar such as "90% or better" lets a change trade ten old cases for ten new ones and still pass.
-A new catch on one case doesn't pay for a new miss on another.
 
-**Give noise a number.**
+**Put a number on noise.**
 A model's output varies between runs, so one run of a case is one sample.
-Decide ahead of time how much variation is noise, write it down, and fail on anything past it.
+Argus allows one extra miss across its nine pull request cases.
+Its baseline is a single run, so that allowance is a judgment until I measure how much a case varies.
+
+**Test the clean cases too.**
+Two of the nine cases are clean changes, and a new finding on either one fails the gate.
+A gate that only checks what the system should catch will pass a change that makes it flag everything.
 
 **Keep the gate out of the change's reach.**
 The cases, the scorer, the baseline, and the thresholds come from the default branch, not from the pull request.
 Otherwise a change can loosen the gate it has to pass.
-And the gate fails closed: a case that errors is a failure, not a skip.
-
-My code reviewer, [Argus](https://github.com/hamseabd/argus), gates its own pull requests this way, and its [whole policy](https://github.com/hamseabd/argus/blob/main/evals/thresholds.yaml) is public.
-It runs nine cases on every change to the reviewer: one seeded bug per specialist, two clean changes that should draw nothing, and one trap.
-It allows one extra miss beyond the baseline, because one is noise and two is a regression.
-It allows no new finding on a clean change.
-
-The clean cases matter as much as the bugs.
-A gate that only checks what the system should catch will pass a change that makes it flag everything.
+A case that errors fails.
 
 ## Watching production
 
 A gate only sees the cases someone wrote down.
-Production sees everything else.
+Production sees the rest.
 
-So the judge samples live output.
-It doesn't block anything.
-It shows when quality moves, and what it finds becomes new golden cases.
-That is how the golden set keeps up with real traffic, and how a problem seen once in production becomes a test that runs on every change after it.
-
-The deterministic checks run in production too, on every output.
-The same rule that fails a test also flags a live answer.
+That is the judge's job, with the deterministic checks beside it on every output.
+Neither can block a release that already happened.
+What they can do is find the case nobody wrote down, so an expert can label it and it can join the golden set.
 
 ## What I learned
 
-**A gate has to be able to say no.**
-A dashboard that shows a score dropping is information. A check that blocks the merge is a decision, made before anyone is tempted to ship anyway.
-
 **A failing eval is a hypothesis.**
-I learned this on [a side project]({{< ref "apex-evals-grading-what-it-does" >}}), where an ugly failure turned out to be a bug in my grader. The first question on any failure is whether the system is wrong or the test is.
+On [a side project]({{< ref "apex-evals-grading-what-it-does" >}}) an ugly failure turned out to be a bug in my grader, so the first question on any red case is whether the system is wrong or the test is.
 
-**The baseline is the bar.**
-"Is it good?" has no stable answer for a model. "Did it get worse than what we accepted last time?" does.
+**The judge needs its own eval.**
+A model that grades other models can agree with everything, and nothing in the pipeline's numbers will show it.
 
-**Use a model to judge only what code can't.**
-Every check that moves from a judge to an assertion is one less thing that can drift, and one less thing to pay for.
+**My own gate has a blind spot.**
+Argus's gate counts misses and findings on clean changes, so a change that only added noise to the buggy cases would pass.
 
-If you're putting evals on a production agent, I'd like to compare notes.
+If you're putting evals on a production system, I'd like to compare notes.
 [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).

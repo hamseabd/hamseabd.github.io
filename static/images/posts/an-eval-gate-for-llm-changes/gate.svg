@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="350" viewBox="0 0 400 350" role="img" aria-labelledby="title desc">
   <title id="title">The three layers of an eval gate</title>
-  <desc id="desc">A change to a prompt, a model, or code passes deterministic checks, which run on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output and does not gate; what it finds becomes new golden cases.</desc>
+  <desc id="desc">A change to a prompt, a model, or code passes deterministic checks, which run on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output, and what it finds can become new golden cases.</desc>
   <!-- One mid-grey palette, no background: the file is embedded as an image, so it cannot
        follow the page theme and has to read on both the light and the dark page. -->
   <style>
@@ -57,7 +57,7 @@
     <text x="68" y="157">every pull request; a failure blocks the merge</text>
     <text x="68" y="217">every release; a failure blocks the release</text>
     <text x="68" y="277">live output</text>
-    <text x="68" y="337">samples live output; does not gate</text>
+    <text x="68" y="337">samples live output, after release</text>
     <text x="14" y="224" text-anchor="middle" transform="rotate(-90 14 224)">new golden cases</text>
   </g>
 </svg>
