@@ -8,6 +8,8 @@ ShowToc: true
 ShowReadingTime: true
 ---
 
+*Update, November 18, 2026: the follow-up, Two months of Argus on real pull requests, covers what it found and what the evals say.*
+
 I seeded two bugs into a repo this morning. A SQL query rebuilt as an f-string, and an off-by-one in a pagination helper. Then I pointed Argus at the branch.
 
 It found both. A second model, whose only job was to prove the findings wrong, confirmed both. It also noticed that neither function had a test, which is how the bugs got in.
@@ -112,7 +114,7 @@ A finding that survives someone trying to kill it is worth a minute. A finding t
 
 The failure mode is honest too. If a verification query fails, the finding is reported as `unverified`, never as `confirmed`. The harness doesn't guess.
 
-I also found the cost argument by accident. The first two reviews let the lead re-check its own findings, and it did: 22 to 26 Opus turns re-reading code, $0.88 of the $1.37 that [PR #8](https://github.com/hamseabd/argus/pull/8) cost. That's the verifier's job. The lead now delegates, merges, and returns, and its own thread costs about six cents.
+I also found the cost argument by accident. The first two reviews let the lead re-check its own findings, and it did: 22 to 26 Opus turns re-reading code, $0.88 of the $1.37 that PR #8 cost. That's the verifier's job. The lead now delegates, merges, and returns, and its own thread costs about six cents.
 
 Here's one that survived, on Argus's own code:
 
@@ -142,7 +144,7 @@ Caveat: IDE and CI are different risk profiles and I've solved the CI one. Run i
 
 Three things can refuse the model, and the order matters. The prompt asks. The schema rejects. The hook denies. I learned to reach for the right one by reaching for the wrong one first.
 
-The lead's prompt had said, for several increments: don't re-read the code, the specialists have read it and the verifier will read it again. Then the per-agent telemetry told me what that prompt was worth. On [PR #10](https://github.com/hamseabd/argus/pull/10#pullrequestreview-5189614285) the lead made 43 tool calls on a four-file diff and the review cost $2.49. On [PR #18](https://github.com/hamseabd/argus/pull/18) it made two, for $0.42. Same prompt.
+The lead's prompt had said, for several increments: don't re-read the code, the specialists have read it and the verifier will read it again. Then the per-agent telemetry told me what that prompt was worth. On PR #10 the lead made 43 tool calls on a four-file diff and the review cost $2.49. On PR #18 it made two, for $0.42. Same prompt.
 
 **A prompt is a request. A hook is a rule.** So the budget moved down the ladder: ten reads for the lead, enforced by a hook. Once they're gone every read is refused with a reason, and the only move left is to answer. Delegation and the final answer are never refused, so the rule can't strand a review.
 
@@ -208,7 +210,7 @@ The fourth layer is the one I haven't built: a golden set of real pull requests 
 
 ### The time it was confidently wrong
 
-On [PR #12](https://github.com/hamseabd/argus/pull/12) Argus reported two HIGH findings across two reviews: that `job.workflow_sha` and `job.workflow_repository` aren't valid GitHub Actions contexts, so the trusted checkout would never use the pinned commit.
+On PR #12 Argus reported two HIGH findings across two reviews: that `job.workflow_sha` and `job.workflow_repository` aren't valid GitHub Actions contexts, so the trusted checkout would never use the pinned commit.
 
 The verifier confirmed both. Both were wrong. The fields exist; the finding was reasoning from older documentation. I settled it the only way you can, with two probe runs that printed the contexts from inside a called workflow, and wrote the disposition on the PR with links to the runs.
 
@@ -218,7 +220,7 @@ This is the limit of refutation, and it's worth being precise about. The verifie
 
 The repo is meant to be read, so the process is in it.
 
-The design came before the code: a spec and an increment plan were committed before the first line ([`a26ca3e`](https://github.com/hamseabd/argus/commit/a26ca3e)). Every increment after that is one branch, one pull request, one squash-merge, and every PR body has the same four parts, why, what changed, a definition of done, and the verification output pasted in ([#19](https://github.com/hamseabd/argus/pull/19) is the shape). The failing test comes first. Architecture rules are tests rather than comments, so the SDK boundary, the no-print rule and the workflow's permissions are all asserted. Prompts live in the package and ship like code, reviewed on a PR. And every decision above is traceable to a PR with the numbers that caused it.
+The design came before the code: a spec and an increment plan were committed before the first line (`a26ca3e`). Every increment after that is one branch, one pull request, one squash-merge, and every PR body has the same four parts, why, what changed, a definition of done, and the verification output pasted in (#19 is the shape). The failing test comes first. Architecture rules are tests rather than comments, so the SDK boundary, the no-print rule and the workflow's permissions are all asserted. Prompts live in the package and ship like code, reviewed on a PR. And every decision above is traceable to a PR with the numbers that caused it.
 
 Claude Code was the pair programmer throughout. The design, the failing tests, the review of every diff and every merge were mine.
 
@@ -226,6 +228,7 @@ Claude Code was the pair programmer throughout. The design, the failing tests, t
 
 No fork PRs. No review on every push, only on open and ready-for-review, plus on demand. No thread replies, and no learning from dispositions. No warning yet when a specialist returns in a second having read nothing, so a clean review and a review nobody performed look the same in the footer. And no measured precision, which is the next thing.
 
-The repo is [github.com/hamseabd/argus](https://github.com/hamseabd/argus). The README is the design doc, the pull requests are the history, and the review on [PR #21](https://github.com/hamseabd/argus/pull/21#pullrequestreview-5193728122) is a good place to watch it work on real code.
+The repo is [github.com/hamseabd/argus](https://github.com/hamseabd/argus). The README is the design doc.
+The development history is private, so the pull requests and commits named in this post are not linked.
 
 If you're building agents that have to earn trust inside a real engineering workflow, I'd like to compare notes. [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).

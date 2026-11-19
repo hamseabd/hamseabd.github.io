@@ -80,8 +80,6 @@ Writing about what you've built forces you to see what's actually wrong with it.
 
 I'm reworking all three from deployed to properly done. Eval suites in CI — LLM-as-judge rubrics, deterministic tool-call assertions, regression cases for past bugs. Powertools and X-Ray across all three. Pydantic on every tool input, retries with backoff, error envelopes the agent can recover from.
 
-I'm publishing weekly on the specifics — what the eval setup looks like, what broke when I added it, what the real numbers look like in practice.
-
-Next up: Apex's eval suite. The interesting part isn't grading what the bot says — it's grading what it does. You text "slept 7 and a half hours" and a row has to land in DynamoDB with the right metric, the right value, on the right date. I built a harness that spins up the real agent against mocked AWS, sends one message, and then queries the database to check the outcome — deterministic, no LLM judge, a few cents a run. That post is next.
+Next up: Apex's eval suite. The interesting part isn't grading what the bot says — it's grading what it does. You text "slept 7 and a half hours" and a row has to land in DynamoDB with the right metric, the right value, on the right date. I built a harness that spins up the real agent against mocked AWS, sends one message, and then queries the database to check the outcome — deterministic, no LLM judge, a few cents a run.
 
 If you're building a team that ships this kind of work, or you've been through your own production agent rework and have lessons worth sharing, I'd like to hear from you. [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).
