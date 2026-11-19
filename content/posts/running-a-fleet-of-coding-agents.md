@@ -26,27 +26,7 @@ The repository is private, so this post describes the design instead of linking 
 
 ## The shape
 
-```
- me -- a request in plain words --> supervisor
-                                         |
-                                task, spec, brief
-                                         |
-                   +---------------------+---------------------+
-                   v                     v                     v
-               builder               builder               builder
-             own worktree          own worktree          own worktree
-              own branch            own branch            own branch
-                   |                     |                     |
-                   +---------- one pull request each ----------+
-                                         |
-                                         v
-                               Argus review and CI
-                                         |
-                   findings back to the builder, two rounds max
-                                         |
-                                         v
- me <-- merge waits for me ---- clean pull request
-```
+![How a request moves through the fleet. I make a request in plain words. The supervisor writes the task, the spec, and the brief, and dispatches up to three builders, each with its own worktree, branch, and pull request. Argus reviews every pull request marked ready. A watcher written in code polls pull requests, CI, and reviews, and findings go back through the supervisor for a fix round, two at most. A merge waits for my approval.](/images/posts/running-a-fleet-of-coding-agents/fleet.svg)
 
 One supervisor.
 Up to three builders in flight.

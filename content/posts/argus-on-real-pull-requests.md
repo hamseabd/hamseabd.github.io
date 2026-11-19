@@ -51,33 +51,7 @@ Where a review is public, I link it.
 
 ## What changed since September
 
-```
- pull request
-      |
-      v
- lead               one query, delegates to all six in one turn
-      |
-      v
- correctness  security  tests  maintainability  design  conventions
-      |
-      v
- report_finding     validated against the repository, kept by id
-      |
-      v
- triage             the lead drops by id, and rewrites nothing
-      |
-      v
- curate   (code)    merge duplicates, cap nits at five, at most 25
-      |
-      v
- verify             one fresh query per finding, with the whole file
-      |
-      v
- post rule (code)   confirmed at 0.6 or above, rejected findings folded
-      |
-      v
- inline review comments
-```
+![How an Argus review runs. A pull request goes to a lead agent, which delegates to six specialists in one turn: correctness, security, tests, maintainability, design, and conventions. Each finding is recorded through a tool, triaged by the lead, curated by code, verified in a fresh query, and passed through a post rule in code before it lands as an inline review comment.](/images/posts/argus-on-real-pull-requests/review-pipeline.svg)
 
 **Six specialists, not three.**
 Correctness, security, tests, maintainability, design, and conventions.

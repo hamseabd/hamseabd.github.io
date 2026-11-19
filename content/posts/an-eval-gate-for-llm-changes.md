@@ -23,24 +23,7 @@ This post is the pattern, not the system.
 
 ## The shape
 
-```
- a change: prompt, model, or code
-      |
-      v
- deterministic checks ..... every output, in tests and in production
-      |
-      v
- golden set, a subset ..... every pull request -> blocks the merge
-      |
-      v
- golden set, all of it .... every release      -> blocks the release
-      |
-      v
- production
-      |
-      v
- cross-family judge ....... sampled live output -> new golden cases
-```
+![The three layers of an eval gate. A change to a prompt, a model, or code passes deterministic checks on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output and does not gate, and what it finds becomes new golden cases.](/images/posts/an-eval-gate-for-llm-changes/gate.svg)
 
 Three layers.
 Each catches a different kind of failure, and none of them is enough alone.
