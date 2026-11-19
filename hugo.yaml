@@ -20,6 +20,7 @@ params:
   description: "Hamse Abdi builds AI agents, the evals that gate them, and the platform they run on. Notes on running agents in production."
   keywords: ["AI engineer", "agentic systems", "LLM", "AWS", "evals", "production AI"]
   author: "Hamse Abdi"
+  role: "Software Engineer, Agentic AI"
   images: ["og.png"]
   defaultTheme: auto
   disableThemeToggle: false
