@@ -11,7 +11,7 @@ ShowReadingTime: true
 A model upgrade was ready to ship.
 The eval gate said no.
 
-[HAMSE: the regression. What got worse, how the gate showed it, and what you thought when you saw it. Describe it as a pattern, with no internal specifics.]
+[CONFIRM: what the regression was, as a pattern with no internal specifics. Your resume says only that a model upgrade regressed and the gate caught it before release.]
 
 The fix was a prompt edit.
 The regression was caught before release, so nobody who relies on that system ever saw it.
@@ -112,8 +112,6 @@ I learned this on [a side project]({{< ref "apex-evals-grading-what-it-does" >}}
 
 **Use a model to judge only what code can't.**
 Every check that moves from a judge to an assertion is one less thing that can drift, and one less thing to pay for.
-
-[HAMSE: a hard-won eval lesson. One thing you got wrong building this, or believed before and don't now.]
 
 If you're putting evals on a production agent, I'd like to compare notes.
 [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).

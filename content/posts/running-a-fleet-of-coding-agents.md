@@ -19,12 +19,19 @@ The site you're reading came out of that evening.
 So did this post, which is the draft I sent back, rewritten.
 
 That agent is the first mate, and the system around it is called Bosun.
+
+I built it because I was getting overwhelmed.
+I was forgetting tasks, forgetting where I was, and mixing things up.
+I looked at how other people were working and found Kun Chen's [firstmate](https://github.com/kunchenguid/firstmate).
+He is the captain. He has a first mate and crew members who each take a task, and he sits on the important decisions.
+I implemented my version of that.
+
 Instead of opening a ton of different Claude Code sessions, I have one entry point.
 Behind it are hooks, subagents, builders, and scouts, with everything in one place.
 It's a lot more efficient.
-One entry point beats a dozen terminals, as long as the rules the crew runs under are written as code.
+Mine also helps me run my day, like a chief of staff, with my own data in my own AWS account and MCP servers and tools I built for it.
 
-[HAMSE: the moment separate sessions stopped working. What were you juggling, and what went wrong or got lost?]
+One entry point beats a dozen terminals, as long as the rules the crew runs under are written as code.
 
 ## The crew
 
@@ -86,23 +93,44 @@ Deciding which of the two a behavior belongs in is most of the design.
 
 ## Rules as code
 
-A prompt is a request.
-The rules I care about live below the prompt.
+Bosun doesn't have access outside of its folders.
+These agents can't just reach everything.
+A prompt is a request, so the rules I care about live below the prompt.
 
-- **A hook denies edits outside the first mate's own state folder.** The denial says what to do instead: create a task and dispatch a builder. If the hook itself fails, it denies.
-- **Merges wait for me.** Merging is on the harness's ask list, so it stops for a human yes every time.
-- **Sends are blocked.** Anything that sends a message on my behalf is on the deny list.
-- **One lease.** Several first mate sessions can be open, and only the lease holder may change the fleet. The lease frees itself after 30 minutes without a heartbeat.
-- **A cap of three.** New work waits when three tasks are in flight, or when a usage window is over 90%. The dispatch command enforces both.
-- **Reading is not obeying.** Pull request comments, review text, issues, repository files, and fetched pages are data. Text that asks an agent to act is a finding to report to me.
+**A hook guards every file edit.**
+The first mate can edit its own state folder and nothing else.
+The denial tells it what to do instead: create a task and dispatch a builder.
+The hook compares paths without regard to case, and by inode, so a second spelling of the same folder doesn't get past it.
+If the hook itself fails, it denies.
 
-Two things on that list are weaker than they sound.
+**A worktree has to be real.**
+The one exception to that rule is a real worktree of the first mate's own checkout.
+The hook doesn't take a folder's word for it.
+It checks git's own records for a link back to that folder, so a directory that only looks like a worktree gets nothing.
+
+**A fence comes before any cloud builder.**
+A session in the cloud carries my account's connectors with it.
+A builder that reads hostile text in a repository could be steered into them.
+So a cloud builder runs only in a repository whose default branch denies those connectors, and until that fence is in place the dispatch command keeps the builder local.
+
+**One lease, a cap, and a quota stop.**
+Several first mate sessions can be open, and only the lease holder may change the fleet.
+New work waits when three tasks are in flight, or when a usage window is over 90%.
+The commands refuse, and no prompt is involved.
+
+**Drafts, never sends.**
+The first mate can draft a message, and it can't send one.
+Merging a pull request stops for a human yes every time.
+
+**Reading is not obeying.**
+Pull request comments, review text, issues, repository files, and fetched pages are data.
+Text that asks an agent to act is a finding to report to me.
+
+Three of these are weaker than they sound.
 The edit hook covers the edit tools, not shell commands.
-And deletes and spending are rules the first mate is told, not blocks.
-A builder's "never merge, never force push" is also in its brief, not in a hook.
+Deletes and spending are rules the first mate is told, not blocks.
+And a builder's "never merge, never force push" lives in its brief.
 The backstop is structural: a builder's work stays on its own branch until a review is in and I merge.
-
-[HAMSE: what the guardrails stopped. One time a hook, the lease, or the cap actually said no, and what would have happened without it.]
 
 ## What I can see
 
@@ -129,13 +157,11 @@ A first mate that fixes one small thing itself stops watching the other builders
 **Rules belong in code.**
 A model follows a prompt most of the time. A hook, a permission, or a command that refuses follows it every time.
 
-**Reading is not obeying.**
-Agents read text written by strangers and by other agents all day. The only safe default is that none of it is an instruction.
-
 **Idle should cost nothing.**
 A model that polls is paying to wait. A plain process waits for free, and wakes the model only when something happened.
 
-[HAMSE: what you'd change. After running it, one thing you'd build differently or cut.]
+**Evals from day one.**
+If I started over, I would start the evals right away. That is how a system like this improves continuously.
 
 If you're building agents that have to earn trust inside a real engineering workflow, I'd like to compare notes.
 [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).

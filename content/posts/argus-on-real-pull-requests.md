@@ -12,13 +12,15 @@ In September I wrote that I couldn't tell you Argus's false-positive rate, only 
 Now I can measure it two ways, and the two don't agree.
 
 Argus is my code reviewer.
-In the week ending November 16, 2026, it posted 145 review comments on one repository, the one where my coding agents work several at a time.
+I'm a builder. I have a ton of projects and a lot of ideas, and I can't be the builder and the reviewer.
+AI was already making the building faster, so I wanted it to make the review faster too.
+A reviewer agent is also blind to the builder's biases.
+
+In the week ending November 16, 2026, Argus posted 145 review comments on one repository, the one where my coding agents work several at a time.
 They write code faster than I can read it, so the first reviewer has to be an agent too.
 
-[HAMSE: why you built Argus, in a line or two. What was review like before it, and what made an agent reviewer necessary?]
-
 That only works if I can trust what it posts.
-A noisy reviewer gets skimmed, then ignored, and the one finding that mattered gets ignored with the rest.
+A noisy code reviewer is one you learn to ignore.
 So precision is the design goal.
 
 Argus goes after it two ways.
@@ -31,6 +33,7 @@ Two months in, one of those is working better than the other.
 Argus is built on the Claude Agent SDK, in Python.
 A lead agent splits a diff across six specialists: correctness, security, tests, maintainability, design, and conventions.
 Each has a narrow prompt that says what counts, what never counts, and how to look.
+I put the emphasis on security, and every finding carries a severity level, from critical down to nit.
 
 ![How an Argus review runs. A pull request goes to a lead agent, which delegates to six specialists in one turn: correctness, security, tests, maintainability, design, and conventions. Each finding is recorded through a tool, triaged by the lead, curated by code, verified in a fresh query, and passed through a post rule in code before it lands as an inline review comment.](/images/posts/argus-on-real-pull-requests/review-pipeline.svg)
 
@@ -85,6 +88,7 @@ The feedback measures trust in use.
 I need both, because neither one can stand in for the other.
 
 Neither number matters unless it changes the reviewer.
+When the reviewer gets better, the code gets better over time.
 Closing that loop takes three kinds of visibility.
 
 ![The feedback loop around Argus. A review posts findings. Reactions, resolved threads, and later commits are read back into a weekly feedback report. A real finding can become an eval case. The eval gates every change to the reviewer, and prompt and code changes flow back into the next review.](/images/posts/argus-on-real-pull-requests/feedback-loop.svg)
@@ -115,9 +119,9 @@ I check its lines by hand before it joins the corpus, because a wrong expectatio
 Argus learned to skip findings it had already posted.
 To do that, it trusted an earlier review if the author was a bot and the body began with its marker.
 GitHub reports every app as a bot.
-On October 2, 2026, reviewing its own change, Argus flagged it as high severity:
-
-> Any bot already installed on the repository that can post a review or review comment can forge a body starting with `<!-- argus:review -->` [...] and the pipeline will mark matching new findings `known`, skip verification, hide them from the report, and not gate on them.
+On October 2, 2026, reviewing its own change, Argus flagged it as high severity.
+Any other app installed on the repository could post a review that opens with the same marker.
+Argus would then treat matching findings as already reported, skip verifying them, and leave them out of the review.
 
 The fix checks the one identity Argus posts as.
 An agent that reads another agent's output needs to know who wrote it.
@@ -128,7 +132,8 @@ Argus pointed out that a wildcard such as `.gi?` names the same directory withou
 The hook now scans for links that lead out, and refuses any pattern that could name `.git`.
 A guardrail that inspects what the model typed is weaker than one that inspects what the call can reach.
 
-[HAMSE: had you read these two diffs yourself before Argus flagged them? One honest line, or cut this.]
+I had read both of those diffs myself before Argus flagged them.
+That is the builder's bias, and the reviewer doesn't have it.
 
 **A grounding check that a pair of quotes defeats.**
 My health agent has a tool that answers from my documents or refuses.
@@ -140,11 +145,12 @@ From [the public review](https://github.com/hamseabd/apex-agent/pull/1#pullreque
 If the model wraps its refusal in quotes, the check misses it, and the answer goes out stamped "from your documents".
 Comparing model output with `==` is a bug waiting for a paraphrase.
 
-[HAMSE: a review that surprised you. Which finding did you not expect it to catch, or which one was it confidently wrong about, and what did you do?]
-
 ## The gap
 
-Catching 21 of 22 is the flattering number.
+I wanted the verifier to be restrictive, because a noisy code reviewer is one you learn to ignore.
+The eval says it isn't restrictive enough yet.
+
+Catching 21 of 22 is the flattering number from the run of November 2, 2026.
 Here is the other one from the same run: half of what Argus reported matched no seeded bug.
 
 The verifier is why.
@@ -164,10 +170,9 @@ Across the two windows above, 2 of 200 posted findings were marked false.
 On the corpus, half were.
 Either the corpus is too strict about what counts, or readers are too generous.
 
+That is the gap I'm closing.
 I'm going through the 21 one at a time to see why the verifier confirmed each.
 Then I clean up and tune the prompts, and run the corpus again.
-
-[HAMSE: which way is it off? You said "a little too strict right now". On the November 2 run the verifier is the opposite: it confirmed 21 of 21 and rejected 0, and its prompt hasn't changed since. The scorer may be the strict part. Your read, in your words, and the two paragraphs above follow it.]
 
 ## What I learned
 
