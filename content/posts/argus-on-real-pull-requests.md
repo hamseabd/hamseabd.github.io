@@ -97,15 +97,15 @@ Every finding Argus posts can be read back.
 A thumbs-up, a resolved thread, or a later commit that changed the flagged lines counts as acted on.
 More thumbs-down than thumbs-up counts as a false positive.
 
-| Repository and window | Posted | Acted on | Marked false positive |
+| Window | Posted | Acted on | Marked false |
 |---|---|---|---|
-| Argus itself, 30 days ending November 2, 2026 | 55 | 46 | 0 |
-| Bosun, 7 days ending November 16, 2026 | 145 | 99 | 2 |
+| Argus, 30 days to Nov 2, 2026 | 55 | 46 | 0 |
+| Bosun, 7 days to Nov 16, 2026 | 145 | 99 | 2 |
 
 Acted on is not the same as right.
 Fixer agents handle the routine findings, and I fix every medium and above myself.
 An agent told to fix something will usually fix it, so the acted-on count flatters the low-severity rows.
-The last column only counts findings someone stopped to mark.
+The last column is false positives, and it only counts findings someone stopped to mark.
 
 Neither number matters unless it changes the reviewer.
 When the reviewer gets better, the code gets better over time.

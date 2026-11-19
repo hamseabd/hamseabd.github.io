@@ -126,10 +126,11 @@ This is the one from the builder that drafted these posts, shortened:
 
 ```
 STATUS: DONE
-PR: https://github.com/hamseabd/hamseabd.github.io/pull/7
-EVIDENCE: site build with and without drafts, then a link check
-          -> 349 internal links checked, 0 broken
-SUMMARY: three drafts, old-post fixes, seven questions for the author.
+PR: hamseabd.github.io #7
+EVIDENCE: site build, then link check
+  -> 349 links checked, 0 broken
+SUMMARY: three drafts, old-post fixes,
+  seven questions for the author.
 ```
 
 Done means showing the command that ran and what came back.

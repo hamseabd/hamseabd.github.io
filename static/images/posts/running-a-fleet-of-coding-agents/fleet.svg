@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="490" viewBox="0 0 400 490" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="637" viewBox="0 0 400 490" role="img" aria-labelledby="title desc">
   <title id="title">How a request moves through Bosun</title>
   <desc id="desc">I make a request in plain words. The first mate turns it into tasks, specs, and briefs. Up to three builders work at once, each with its own worktree, branch, and pull request, and a scout does read-only research. Argus reviews every pull request marked ready. A watcher written in code polls pull requests, CI, and reviews, and findings go back through the first mate for a fix round, two at most. A merge waits for my approval.</desc>
   <!-- One mid-grey palette, no background: the file is embedded as an image, so it cannot

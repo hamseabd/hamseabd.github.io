@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="350" viewBox="0 0 400 350" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="455" viewBox="0 0 400 350" role="img" aria-labelledby="title desc">
   <title id="title">The three layers of an eval gate</title>
   <desc id="desc">A change to a prompt, a model, or code passes deterministic checks, which run on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output, and what it finds can become new golden cases.</desc>
   <!-- One mid-grey palette, no background: the file is embedded as an image, so it cannot
