@@ -4,6 +4,9 @@ theme: "PaperMod"
 languageCode: "en-us"
 
 enableRobotsTXT: true
+capitalizeListTitles: false
+taxonomies:
+  tag: tags
 buildDrafts: false
 buildFuture: false
 buildExpired: false
@@ -18,6 +21,7 @@ params:
   description: "Hamse Abdi builds AI agents, the evals that gate them, and the platform they run on. Notes on running agents in production."
   keywords: ["AI engineer", "agentic systems", "LLM", "AWS", "evals", "production AI"]
   author: "Hamse Abdi"
+  images: ["og.png"]
   defaultTheme: auto
   disableThemeToggle: false
   ShowReadingTime: true
