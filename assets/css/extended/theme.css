@@ -1,0 +1,30 @@
+/* Small overrides so PaperMod's own pages sit with home and About. */
+
+/* One background everywhere. PaperMod greys list pages in light mode only. */
+body.list {
+  background: var(--theme);
+}
+
+/* Titles share the home headline's weight and tracking. */
+.post-title,
+.page-header h1 {
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.post-title {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.post-content h2,
+.post-content h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* With the footer hidden, the page still needs room to end. */
+.main {
+  padding-bottom: 5rem;
+}

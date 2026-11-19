@@ -4,7 +4,6 @@ theme: "PaperMod"
 languageCode: "en-us"
 
 enableRobotsTXT: true
-capitalizeListTitles: false
 taxonomies:
   tag: tags
 buildDrafts: false
@@ -34,6 +33,7 @@ params:
   UseHugoToc: true
   disableSpecial1stPost: false
   disableScrollToTop: false
+  hideFooter: true
   comments: false
 
   socialIcons:
