@@ -19,6 +19,7 @@
   text-decoration-color: var(--tertiary);
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
+  transition: text-decoration-color 0.15s ease;
 }
 
 .site-page a:hover {
@@ -33,7 +34,10 @@
 
 /* Intro: who, the one headline, a short paragraph, where to go next */
 
-.site-page-who {
+.site-page .site-page-who {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
   margin: 0 0 1.25rem;
   font-size: var(--page-meta);
 }
@@ -119,6 +123,16 @@
   margin-bottom: 0.75rem;
 }
 
+/* About is prose: the reading text is darker, the role and date lines stay quiet. */
+
+article.site-page {
+  color: var(--content);
+}
+
+article.site-page h3 + p {
+  color: var(--secondary);
+}
+
 .site-page-meta,
 .site-page-meta a,
 .site-page time {
@@ -143,6 +157,37 @@
 
 .site-page time {
   white-space: nowrap;
+}
+
+/* The one drawing on the site: how an Argus review flows */
+
+.site-page-diagram {
+  display: block;
+  width: 100%;
+  max-width: 440px;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.site-page-diagram-lines {
+  fill: none;
+  stroke: var(--tertiary);
+  stroke-width: 1;
+}
+
+.site-page-diagram-ends {
+  fill: var(--theme);
+  stroke: var(--secondary);
+  stroke-width: 1.5;
+}
+
+.site-page-diagram-agents {
+  fill: var(--primary);
+}
+
+.site-page-diagram-labels {
+  fill: var(--secondary);
+  font-size: 13px;
+  text-anchor: middle;
 }
 
 @media (max-width: 600px) {

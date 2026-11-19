@@ -2,7 +2,7 @@
 {{- $argusPost := site.GetPage "/posts/argus-code-review-agent" }}
 <div class="site-page">
 
-  <p class="site-page-who">Hamse Abdi, Software Engineer, Agentic AI, Atlanta</p>
+  <p class="site-page-who"><span>Software Engineer, Agentic AI</span><span>Atlanta, GA</span></p>
   <h1>I build AI agents, the evals that gate them, and the platform they run on.</h1>
   <p>
     At Travelers I took a generative AI pilot to production as the underwriters' daily workbench.
@@ -23,7 +23,7 @@
       <dt>Applied AI</dt>
       <dd>
         <strong>Case review cut from roughly 6 hours to 30 minutes.</strong>
-        A generative AI pilot, taken to production as the underwriters' daily workbench.
+        The underwriters' daily workbench. It summarizes each policy's claim notes, with citations, before the review starts.
       </dd>
       <dt>Agents</dt>
       <dd>
@@ -45,6 +45,35 @@
       <dd>
         <strong>Catches 21 of 22 seeded bugs on its 32-case eval corpus.</strong>
         Multi-agent code reviewer. A verifier tries to refute each finding before it posts.
+        <svg class="site-page-diagram" viewBox="0 0 440 136" role="img" aria-labelledby="argus-flow">
+          <title id="argus-flow">A diff goes to a lead agent, which hands it to six specialists. A verifier checks every finding before the review posts.</title>
+          <g class="site-page-diagram-lines">
+            <path d="M6 56H113M327 56H434"/>
+            <path d="M113 56L220 16M113 56L220 32M113 56L220 48M113 56L220 64M113 56L220 80M113 56L220 96"/>
+            <path d="M220 16L327 56M220 32L327 56M220 48L327 56M220 64L327 56M220 80L327 56M220 96L327 56"/>
+          </g>
+          <g class="site-page-diagram-ends">
+            <circle cx="6" cy="56" r="5"/>
+            <circle cx="434" cy="56" r="5"/>
+          </g>
+          <g class="site-page-diagram-agents">
+            <circle cx="113" cy="56" r="6"/>
+            <circle cx="220" cy="16" r="4"/>
+            <circle cx="220" cy="32" r="4"/>
+            <circle cx="220" cy="48" r="4"/>
+            <circle cx="220" cy="64" r="4"/>
+            <circle cx="220" cy="80" r="4"/>
+            <circle cx="220" cy="96" r="4"/>
+            <circle cx="327" cy="56" r="6"/>
+          </g>
+          <g class="site-page-diagram-labels">
+            <text x="0" y="128" text-anchor="start">Diff</text>
+            <text x="113" y="128">Lead</text>
+            <text x="220" y="128">6 specialists</text>
+            <text x="327" y="128">Verifier</text>
+            <text x="440" y="128" text-anchor="end">Review</text>
+          </g>
+        </svg>
         <span class="site-page-meta">
           <a href="https://github.com/hamseabd/argus">Code</a>
           <a href="{{ $argusPost.RelPermalink }}">Write-up</a>
