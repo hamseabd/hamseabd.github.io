@@ -12,6 +12,18 @@ hugo server --buildDrafts
 hugo --minify
 ```
 
+## Verify
+
+```bash
+# Build as the deploy does, check every internal link, asset, and #anchor,
+# and confirm drafts stay out of the published build (Python 3.12, stdlib only)
+scripts/verify.sh
+
+# The checker's own tests
+python3.12 -m venv .venv && .venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -m pytest scripts
+```
+
 ## Add a new post
 
 ```bash

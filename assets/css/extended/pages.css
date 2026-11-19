@@ -1,0 +1,215 @@
+/* Home and About share one quiet system: three type sizes, two text colors,
+   whitespace instead of boxes. PaperMod bundles every file in this folder. */
+
+.site-page {
+  --page-meta: 13px;
+  --page-body: 16px;
+  --page-display: clamp(32px, 6.4vw, 48px);
+  --page-space: 4.5rem;
+
+  padding: 4rem 0 2rem;
+  font-size: var(--page-body);
+  line-height: 1.6;
+  color: var(--secondary);
+}
+
+.site-page a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-color: var(--tertiary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.site-page a:hover {
+  text-decoration-color: var(--primary);
+}
+
+.site-page a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Intro: who, the one headline, a short paragraph, where to go next */
+
+.site-page .site-page-who {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  margin: 0 0 1.25rem;
+  font-size: var(--page-meta);
+}
+
+.site-page h1 {
+  max-width: 17em;
+  margin: 0 0 1.5rem;
+  font-size: var(--page-display);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  text-wrap: balance;
+}
+
+.site-page p {
+  max-width: 58ch;
+  margin: 0 0 1rem;
+}
+
+.site-page-links,
+.site-page-posts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-page-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin-top: 2rem;
+}
+
+/* Sections: a small heading on a hairline, then rows */
+
+.site-page h2 {
+  margin: var(--page-space) 0 1.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--page-meta);
+  font-weight: 400;
+  color: var(--secondary);
+}
+
+.site-page h3 {
+  margin: 2.25rem 0 0.25rem;
+  font-size: var(--page-body);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.site-page h2 + h3 {
+  margin-top: 0;
+}
+
+.site-page dl {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 1.75rem 1.5rem;
+  margin: 0;
+}
+
+.site-page dt {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.site-page dd {
+  margin: 0;
+}
+
+.site-page dd strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+/* About is prose: the reading text is darker, the role and date lines stay quiet. */
+
+article.site-page {
+  color: var(--content);
+}
+
+article.site-page h3 + p {
+  color: var(--secondary);
+}
+
+article.site-page ul {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+article.site-page li {
+  max-width: 58ch;
+  margin-bottom: 0.75rem;
+}
+
+.site-page-meta,
+.site-page-meta a,
+.site-page time {
+  font-size: var(--page-meta);
+}
+
+.site-page-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.site-page-posts li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.site-page time {
+  white-space: nowrap;
+}
+
+/* The one drawing on the site: how an Argus review flows */
+
+.site-page-diagram {
+  display: block;
+  width: 100%;
+  max-width: 440px;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.site-page-diagram-lines {
+  fill: none;
+  stroke: var(--tertiary);
+  stroke-width: 1;
+}
+
+.site-page-diagram-ends {
+  fill: var(--theme);
+  stroke: var(--secondary);
+  stroke-width: 1.5;
+}
+
+.site-page-diagram-agents {
+  fill: var(--primary);
+}
+
+.site-page-diagram-labels {
+  fill: var(--secondary);
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+@media (max-width: 600px) {
+  .site-page {
+    --page-space: 3.5rem;
+    padding-top: 2.25rem;
+  }
+
+  .site-page dl {
+    grid-template-columns: 1fr;
+    row-gap: 0.25rem;
+  }
+
+  .site-page dd {
+    margin-bottom: 1.5rem;
+  }
+
+  .site-page dd:last-child {
+    margin-bottom: 0;
+  }
+}

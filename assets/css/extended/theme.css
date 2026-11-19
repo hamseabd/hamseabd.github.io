@@ -1,0 +1,70 @@
+/* Small overrides so PaperMod's own pages sit with home and About. */
+
+/* One background everywhere. PaperMod greys list pages in light mode only. */
+body.list {
+  background: var(--theme);
+}
+
+/* The header shares the content column, so the name and the last nav link
+   sit on the same edges as the text below them. */
+:root {
+  --nav-width: var(--main-width);
+}
+
+.theme-toggle {
+  padding: 0 0.25rem;
+}
+
+/* On a phone the name and the nav each get their own row:
+   name left with the theme toggle on the right edge, nav beneath. */
+@media (max-width: 480px) {
+  .header-nav {
+    padding-top: 0.5rem;
+    line-height: 44px;
+  }
+
+  .logo {
+    flex: 1 0 100%;
+    justify-content: space-between;
+  }
+
+  .logo a {
+    font-size: 22px;
+  }
+
+  .theme-toggle {
+    margin-right: -0.25rem;
+  }
+
+  .menu {
+    column-gap: 1.5rem;
+  }
+
+  .menu a {
+    font-size: 15px;
+  }
+}
+
+/* Titles share the home headline's weight and tracking. */
+.post-title,
+.page-header h1 {
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.post-title {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.post-content h2,
+.post-content h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* With the footer hidden, the page still needs room to end. */
+.main {
+  padding-bottom: 5rem;
+}

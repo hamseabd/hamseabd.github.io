@@ -1,6 +1,9 @@
 public/
 resources/_gen/
 .hugo_build.lock
+.venv/
+__pycache__/
+.pytest_cache/
 .DS_Store
 *.swp
 *.swo

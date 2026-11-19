@@ -2,30 +2,84 @@
 title: "About"
 url: "/about/"
 layout: "about"
-summary: about
-hidemeta: true
-ShowToc: false
-ShowReadingTime: false
-ShowWordCount: false
+description: "Hamse Abdi is a software engineer in Atlanta. He builds agentic AI systems, the evals that gate them, and the platform they run on."
+hiddenInRss: true
 ---
 
-I'm Hamse, an AI engineer with five years of production experience, currently building agentic systems at Travelers and on AWS.
+I'm Hamse, a software engineer in Atlanta.
+I build agentic AI systems, the evals that gate them, and the platform they run on.
+I have been at Travelers since 2021.
 
-**Day job:** At Travelers I built a multi-agent underwriting system — a reader agent feeding 11 parallel evaluator agents on Bedrock via Strands SDK — that replaced a 23-minute manual expert review with citation-backed approve/decline/escalate decisions. I designed the LLM-as-judge harness behind it: cross-validated across Claude and Amazon Nova to eliminate same-model bias, calibrated to 89% agreement at high confidence, with human-in-the-loop routing for low-confidence cases. An independent judge rated the system more accurate than the GPT-4 incumbent on 72% of 109 disagreements across 891 evaluations.
+## Experience
 
-**Personal projects:** I run three deployed agentic systems on AWS, and a code-review agent that reviews their pull requests:
+### Software Engineer, Agentic AI
 
-- **Stride** — an SMS productivity coach. [Strands SDK](https://strandsagents.com) + Claude Sonnet 4.6, 21 tools, Haiku intent classifier for cost control, single-table DynamoDB (14 entity types), full A2P 10DLC compliance.
-- **Apex** — a proactive Telegram health accountability bot. Bedrock + Strands, protocol YAML drives dynamic tool generation at cold start — add a metric to config and the agent gains a tool, zero code changes. 9 EventBridge schedules drive check-ins throughout the day. An eval harness grades the agent's outcomes against database state, not its transcripts.
-- **Stock Intel** — a Telegram market intelligence platform. 27 commands, 8 automated scanners, SQS alert pipeline. 80% of commands skip Claude entirely; AI routes only where it adds real value.
-- **Argus** — a multi-agent code-review harness on the Claude Agent SDK. A lead reviewer orchestrates three specialist subagents, a verifier tries to refute every finding before it is reported, and the result lands as inline GitHub review comments. Read-only by construction, $0 to run on GitHub Actions, and it reviews its own pull requests. [Write-up](/posts/argus-code-review-agent/).
+Travelers, 2023 to present
 
-I write here about what it takes to ship and run agents in production: multi-agent architecture, eval strategies that catch real bugs, LLM observability, and keeping three production systems running on $1–3/month.
+- Took a generative AI pilot to production as the underwriters' daily workbench and cut case review from roughly 6 hours to 30 minutes.
+- Designed and built a multi-agent renewal system on the Strands SDK and Bedrock AgentCore, now in pilot with early users.
+- Built the eval gate that every prompt and model change has to pass. It caught a model-upgrade regression before release, fixed with a prompt edit.
+- Put the guardrails in code, not prompts. Agents never write to policy systems, and an underwriter approves every adverse decision.
+- Routed agent tools through an MCP gateway with Okta handling identity, and sent OpenTelemetry traces to Braintrust and Datadog.
+- Led both systems through Legal, Compliance, AI Risk, and Architecture review.
 
-For hiring managers and engineers who care about real production AI — not demos.
+### Full Stack Software Engineer
+
+Travelers, 2021 to 2023
+
+- Built a REST API platform with OpenAPI contracts that product teams adopted. The AI platform still runs on it.
+- Built the team's first generative AI pilot end to end in 2023. It led to the production build.
+
+## Projects
+
+### Argus
+
+Multi-agent code reviewer on the Claude Agent SDK.
+
+- A lead agent hands the diff to 6 specialist subagents, and a verifier tries to refute each finding before it posts.
+- Its own pull requests are gated on seeded-bug evals. The baseline catches 21 of 22 bugs on a 32-case corpus.
+- Runs as a GitHub Action on a Claude subscription token at $0 a review.
+
+[Code](https://github.com/hamseabd/argus) and [write-up]({{< ref "posts/argus-code-review-agent" >}}).
+
+### Bosun
+
+Supervised fleet of coding agents, in a private repository.
+
+- A supervisor agent turns a plain request into a spec and hands it to parallel builder agents across repos, each on its own branch.
+- It watches CI and Argus reviews, sends findings back to the builders for fix rounds, and brings decisions to me.
+- Merges, sends, and spending stay behind human approval.
+
+### Stride
+
+Proactive Agile coach over SMS.
+
+- Texts first, using a no-model scheduler and a Haiku router in front of a Sonnet agent with 21 tools.
+- Ran a serverless private beta with 14,004 scheduler runs and zero errors, at two cents a turn.
+- 345 tests and 97 eval checks gate every pull request.
+
+[Code](https://github.com/hamseabd/Stride).
+
+## Skills
+
+AI and agents
+: Strands Agents SDK, Bedrock AgentCore, LangGraph, Claude Agent SDK, Claude Code, MCP, Azure OpenAI, RAG, OpenSearch
+
+Evals and tracing
+: LLM-as-judge, Braintrust, OpenTelemetry, Datadog, CloudWatch, X-Ray, GitHub Actions, pytest
+
+Full stack
+: Python, SQL, TypeScript, JavaScript, FastAPI, Pydantic, Node.js, React, Next.js, OpenAPI, OAuth 2.0, Okta, PostgreSQL, MongoDB, Redis, RabbitMQ, Kafka
+
+AWS and infra
+: Lambda, API Gateway, Step Functions, EventBridge, SQS, S3, CloudFront, EC2, EKS, DynamoDB, Cognito, Docker, Terraform
+
+## Education
+
+University of Minnesota, Twin Cities. B.S. Computer Science, 2021.
+
+AWS Certified Developer, Associate.
 
 ## Contact
 
-- **GitHub:** [hamseabd](https://github.com/hamseabd)
-- **LinkedIn:** [hamseabdi](https://www.linkedin.com/in/hamseabdi/)
-- **Email:** hmseabd at gmail
+[Resume](/resume.pdf), [GitHub](https://github.com/hamseabd), [LinkedIn](https://www.linkedin.com/in/hamseabdi/), or [hmseabd@gmail.com](mailto:hmseabd@gmail.com).
