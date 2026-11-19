@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="455" viewBox="0 0 400 350" role="img" aria-labelledby="title desc">
+  <title id="title">The three layers of an eval gate</title>
+  <desc id="desc">A change to a prompt, a model, or code passes deterministic checks, which run on every output. A subset of the golden set runs on every pull request and blocks the merge. The full golden set runs on every release and blocks the release. In production, a judge from a different model family samples live output, and what it finds can become new golden cases.</desc>
+  <!-- One mid-grey palette, no background: the file is embedded as an image, so it cannot
+       follow the page theme and has to read on both the light and the dark page. -->
+  <style>
+    .line { fill: none; stroke: #8f8f8f; stroke-width: 1; }
+    .model, .code, .head { fill: #757575; }
+    .end { fill: none; stroke: #757575; stroke-width: 1.5; }
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: #7c7c7c; }
+    .name { font-size: 14px; font-weight: 600; }
+    .note { font-size: 13px; }
+    .key { font-size: 12px; }
+  </style>
+
+  <g class="line">
+    <path d="M44 19V249M44 259V314"/>
+    <!-- New golden cases: from the judge back up to the golden set. -->
+    <path d="M38 314H30Q22 314 22 306V142Q22 134 30 134H33"/>
+  </g>
+  <path class="head" d="M38 134L32 130.500V137.500Z"/>
+
+  <g class="end">
+    <circle cx="44" cy="14" r="5"/>
+    <circle cx="44" cy="254" r="5"/>
+  </g>
+
+  <g class="code">
+    <rect x="39" y="69" width="10" height="10"/>
+    <rect x="39" y="129" width="10" height="10"/>
+    <rect x="39" y="189" width="10" height="10"/>
+  </g>
+
+  <g class="model">
+    <circle cx="44" cy="314" r="6"/>
+  </g>
+
+  <g class="key">
+    <circle class="model" cx="296" cy="14" r="5"/>
+    <text x="306" y="18">model</text>
+    <rect class="code" x="353" y="9" width="10" height="10"/>
+    <text x="369" y="18">code</text>
+  </g>
+
+  <g class="name">
+    <text x="68" y="19">A change</text>
+    <text x="68" y="79">Deterministic checks</text>
+    <text x="68" y="139">Golden set, a subset</text>
+    <text x="68" y="199">Golden set, all of it</text>
+    <text x="68" y="259">Production</text>
+    <text x="68" y="319">Cross-family judge</text>
+  </g>
+
+  <g class="note">
+    <text x="68" y="37">a prompt, a model, or code</text>
+    <text x="68" y="97">every output, in tests and in production</text>
+    <text x="68" y="157">every pull request; a failure blocks the merge</text>
+    <text x="68" y="217">every release; a failure blocks the release</text>
+    <text x="68" y="277">live output</text>
+    <text x="68" y="337">samples live output, after release</text>
+    <text x="14" y="224" text-anchor="middle" transform="rotate(-90 14 224)">new golden cases</text>
+  </g>
+</svg>

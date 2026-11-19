@@ -116,6 +116,6 @@ And the honest measure of whether the suite was worth it isn't the green board. 
 
 More cases, mined from real misfires instead of invented ones. The same suite run across multiple protocols. An LLM-as-judge layer for the things state can't capture — tone, brevity, whether the coaching actually reads like coaching.
 
-Then the same treatment for Stride, my SMS productivity agent, which has its own eval story — including a few grader bugs of its own. That post is next.
+Then the same treatment for Stride, my SMS productivity agent, which has its own eval story — including a few grader bugs of its own.
 
 If you're building a team that ships this kind of work, or you've put evals on a production agent and have war stories, I'd like to compare notes. [GitHub](https://github.com/hamseabd) / [LinkedIn](https://www.linkedin.com/in/hamseabdi/).

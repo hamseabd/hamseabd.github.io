@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="827" viewBox="0 0 400 636" role="img" aria-labelledby="title desc">
+  <title id="title">How an Argus review runs</title>
+  <desc id="desc">A pull request goes to a lead agent, which delegates to six specialists in one turn: correctness, security, tests, maintainability, design, and conventions. Each finding is recorded through a tool, triaged by the lead, curated by code, verified in a fresh query, and passed through a post rule in code before it lands as an inline review comment.</desc>
+  <!-- One mid-grey palette, no background: the file is embedded as an image, so it cannot
+       follow the page theme and has to read on both the light and the dark page. -->
+  <style>
+    .line { fill: none; stroke: #8f8f8f; stroke-width: 1; }
+    .agent, .code { fill: #757575; }
+    .end { fill: none; stroke: #757575; stroke-width: 1.5; }
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: #7c7c7c; }
+    .name { font-size: 14px; font-weight: 600; }
+    .note { font-size: 13px; }
+    .key { font-size: 12px; }
+  </style>
+
+  <g class="line">
+    <path d="M16 19V595"/>
+    <path d="M16 136H52M16 160H52M16 184H52M16 208H52M16 232H52M16 256H52"/>
+  </g>
+
+  <g class="end">
+    <circle cx="16" cy="14" r="5"/>
+    <circle cx="16" cy="600" r="5"/>
+  </g>
+
+  <g class="agent">
+    <circle cx="16" cy="74" r="6"/>
+    <circle cx="52" cy="136" r="4"/>
+    <circle cx="52" cy="160" r="4"/>
+    <circle cx="52" cy="184" r="4"/>
+    <circle cx="52" cy="208" r="4"/>
+    <circle cx="52" cy="232" r="4"/>
+    <circle cx="52" cy="256" r="4"/>
+    <circle cx="16" cy="360" r="6"/>
+    <circle cx="16" cy="480" r="6"/>
+  </g>
+
+  <g class="code">
+    <rect x="11" y="295" width="10" height="10"/>
+    <rect x="11" y="415" width="10" height="10"/>
+    <rect x="11" y="535" width="10" height="10"/>
+  </g>
+
+  <g class="key">
+    <circle class="agent" cx="296" cy="14" r="5"/>
+    <text x="306" y="18">agent</text>
+    <rect class="code" x="353" y="9" width="10" height="10"/>
+    <text x="369" y="18">code</text>
+  </g>
+
+  <g class="name">
+    <text x="40" y="19">Pull request</text>
+    <text x="40" y="79">Lead</text>
+    <text x="40" y="305">Record</text>
+    <text x="40" y="365">Triage</text>
+    <text x="40" y="425">Curate</text>
+    <text x="40" y="485">Verify</text>
+    <text x="40" y="545">Post rule</text>
+    <text x="40" y="605">Review</text>
+  </g>
+
+  <g class="note">
+    <text x="40" y="37">the diff, the changed files, the repository's rules</text>
+    <text x="40" y="97">one query, delegates to all six in one turn</text>
+    <text x="66" y="140.500">correctness</text>
+    <text x="66" y="164.500">security</text>
+    <text x="66" y="188.500">tests</text>
+    <text x="66" y="212.500">maintainability</text>
+    <text x="66" y="236.500">design</text>
+    <text x="66" y="260.500">conventions</text>
+    <text x="40" y="323">report_finding validates each finding, keeps it by id</text>
+    <text x="40" y="383">the lead drops findings by id, and rewrites nothing</text>
+    <text x="40" y="443">merges duplicates, caps nits, at most 25 findings</text>
+    <text x="40" y="503">one fresh query per finding, with the whole file</text>
+    <text x="40" y="563">confirmed at 0.6 or above, rejected findings folded</text>
+    <text x="40" y="623">inline comments on the pull request</text>
+  </g>
+</svg>
