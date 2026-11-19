@@ -58,13 +58,18 @@
   margin: 0 0 1rem;
 }
 
+.site-page-links,
+.site-page-posts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .site-page-links {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1.75rem;
-  margin: 2rem 0 0;
-  padding: 0;
-  list-style: none;
+  margin-top: 2rem;
 }
 
 /* Sections: a small heading on a hairline, then rows */
@@ -112,17 +117,6 @@
   color: var(--primary);
 }
 
-.site-page ul {
-  margin: 0.75rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.site-page ul li {
-  max-width: 58ch;
-  margin-bottom: 0.75rem;
-}
-
 /* About is prose: the reading text is darker, the role and date lines stay quiet. */
 
 article.site-page {
@@ -131,6 +125,17 @@ article.site-page {
 
 article.site-page h3 + p {
   color: var(--secondary);
+}
+
+article.site-page ul {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+article.site-page li {
+  max-width: 58ch;
+  margin-bottom: 0.75rem;
 }
 
 .site-page-meta,
@@ -146,12 +151,11 @@ article.site-page h3 + p {
   margin-top: 0.5rem;
 }
 
-.site-page .site-page-posts li {
+.site-page-posts li {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 1.5rem;
-  max-width: none;
   margin-bottom: 1rem;
 }
 
