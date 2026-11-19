@@ -1,8 +1,9 @@
 {{- define "main" }}
 {{- $argusPost := site.GetPage "/posts/argus-code-review-agent" }}
+{{- $apexPost := site.GetPage "/posts/apex-evals-grading-what-it-does" }}
 <div class="site-page">
 
-  <p class="site-page-who"><span>Software Engineer, Agentic AI</span><span>Atlanta, GA</span></p>
+  <p class="site-page-who"><span>{{ site.Params.role }}</span><span>Atlanta, GA</span></p>
   <h1>I build AI agents, the evals that gate them, and the platform they run on.</h1>
   <p>
     At Travelers I took a generative AI pilot to production as the underwriters' daily workbench.
@@ -23,17 +24,17 @@
       <dt>Applied AI</dt>
       <dd>
         <strong>Case review cut from roughly 6 hours to 30 minutes.</strong>
-        The underwriters' daily workbench. It summarizes each policy's claim notes, with citations, before the review starts.
+        A Python and FastAPI service, run as a nightly batch, summarizes each policy's claim notes with citations and answers the standard review questions ahead of time. It went out through shadow mode and a pilot group.
       </dd>
       <dt>Agents</dt>
       <dd>
         <strong>A multi-agent renewal system, now in pilot with early users.</strong>
-        Guardrails in code, not prompts. An underwriter approves every adverse decision.
+        Built on the Strands SDK and Bedrock AgentCore. A nightly batch over every policy up for renewal replaced an on-demand agent, so each decision is reproducible and auditable. Agents never write to policy systems, and an underwriter approves every adverse decision.
       </dd>
       <dt>Platform</dt>
       <dd>
         <strong>An eval gate every prompt and model change has to pass.</strong>
-        It caught a model-upgrade regression before release. Agent tools run through an MCP gateway.
+        A golden dataset labeled by underwriter SMEs runs on every pull request, and a judge model from a different model family samples production output. The gate caught a model-upgrade regression before release. Agent tools go through an MCP gateway, with Okta for identity.
       </dd>
     </dl>
   </section>
@@ -44,7 +45,7 @@
       <dt>Argus</dt>
       <dd>
         <strong>Catches 21 of 22 seeded bugs on its 32-case eval corpus.</strong>
-        Multi-agent code reviewer. A verifier tries to refute each finding before it posts.
+        A lead agent on the Claude Agent SDK hands the diff to 6 specialist subagents, and a verifier tries to refute each finding before it posts. It runs as a GitHub Action at $0 a review, on a Claude subscription token.
         <svg class="site-page-diagram" viewBox="0 0 440 136" role="img" aria-labelledby="argus-flow">
           <title id="argus-flow">A diff goes to a lead agent, which hands it to six specialists. A verifier checks every finding before the review posts.</title>
           <g class="site-page-diagram-lines">
@@ -82,21 +83,33 @@
       <dt>Bosun</dt>
       <dd>
         <strong>Turns a plain request into a spec, then into parallel builder agents across repos.</strong>
-        Merges, sends, and spending stay behind human approval.
+        It watches CI and Argus reviews and sends findings back to the builders for fix rounds. Hooks and permission rules fence agent writes, a lease lets only one supervisor act at a time, and merges, sends, and spending wait for human approval.
         <span class="site-page-meta">Private repository</span>
       </dd>
       <dt>Stride</dt>
       <dd>
         <strong>14,004 scheduler runs with zero errors in private beta, at two cents a turn.</strong>
-        SMS Scrum coach that texts first. 345 tests and 97 eval checks gate every pull request.
+        An SMS coach that texts first. A no-model scheduler decides when, and a Haiku router sits in front of a Sonnet agent with 21 tools. 345 tests and 97 eval checks gate every pull request.
         <span class="site-page-meta">
           <a href="https://github.com/hamseabd/Stride">Code</a>
         </span>
       </dd>
-      <dt>Also</dt>
+      <dt>Apex</dt>
       <dd>
-        <a href="https://github.com/hamseabd/apex-agent">Apex</a> and
-        <a href="https://github.com/hamseabd/stock-intel">Stock Intel</a>, on GitHub.
+        <strong>Add a metric to a YAML file and the agent gains a tool at the next cold start.</strong>
+        A Telegram health agent on Strands and Claude through Bedrock, with single-table DynamoDB. Its eval suite passed 66 of 66 runs.
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/apex-agent">Code</a>
+          <a href="{{ $apexPost.RelPermalink }}">Write-up</a>
+        </span>
+      </dd>
+      <dt>Stock Intel</dt>
+      <dd>
+        <strong>80% of its 27 commands never call the model.</strong>
+        Telegram market intelligence on Lambda, DynamoDB, SQS, and EventBridge. 8 scheduled scanners push alerts, and it runs for about $1 to $3 a month.
+        <span class="site-page-meta">
+          <a href="https://github.com/hamseabd/stock-intel">Code</a>
+        </span>
       </dd>
     </dl>
   </section>
