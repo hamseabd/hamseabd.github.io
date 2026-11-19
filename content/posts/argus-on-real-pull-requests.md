@@ -1,9 +1,9 @@
 ---
-title: "Two months of Argus on real pull requests: what it found, and what the evals say"
+title: "Two months of Argus on real pull requests"
 date: 2026-11-18
 draft: true
 tags: ["agents", "code-review", "claude-agent-sdk", "evals", "harness-engineering"]
-summary: "Argus is my multi-agent code reviewer. Since the first write-up it grew from three specialists to six, got an eval corpus and a gate, and reviewed real pull requests across my repositories. It found holes in its own guardrails. The evals also showed that the verifier I called the whole design confirms every false finding it sees."
+summary: "Argus is my multi-agent code reviewer. Since the first write-up it grew from three specialists to six, got an eval corpus and a gate, and reviewed real pull requests across my repositories. It found holes in its own guardrails. Here is what it found, and what the evals say."
 ShowToc: true
 ShowReadingTime: true
 ---
@@ -111,7 +111,6 @@ HIGH at 0.60, and the fix landed on the same pull request.
 That finding is now a case in the eval corpus, snapshotted from the pull request it was posted on.
 
 Four high-severity findings in the reviewer's own machinery, each fixed on the branch that introduced it.
-[CONFIRM: add a line on whether you had read these diffs yourself before Argus flagged them, if you want to make that point.]
 
 ## What it found in someone else's code
 
