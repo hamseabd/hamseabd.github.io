@@ -9,8 +9,8 @@ ShowReadingTime: true
 ---
 
 Three coding agents are at work in three repositories.
+Each is on its own branch.
 None of them merges its own work.
-None of them can write outside its own worktree.
 The process watching them spends no tokens.
 
 That is Bosun, a supervisor for coding agents.
@@ -63,7 +63,7 @@ The supervisor is a Claude Code session with its own rules, skills, and command-
 It owns the task records and nothing else.
 
 It does not write code.
-A hook runs before every edit it attempts and denies any write outside its state folder.
+A hook runs before every file edit it attempts and denies any edit outside its state folder.
 The denial tells it what to do instead: create a task and dispatch a builder.
 
 ## The builders
@@ -91,7 +91,7 @@ SUMMARY: 10 lines max, terse fragments.
 ```
 
 The evidence line is the point.
-A builder cannot say done without showing the command it ran and what came back.
+Done means showing the command that ran and what came back.
 
 The brief also says what a builder never does:
 
@@ -144,11 +144,14 @@ A prompt is a request.
 The rules that matter live below the prompt, in hooks, permissions, and commands.
 
 **Hooks.**
-One hook guards every edit, for the supervisor and the builders alike.
-The supervisor writes only inside its state folder.
-A builder writes only inside its own worktree, and never to the task records.
-The hook compares paths without regard to case, and by inode, so a second spelling of a folder does not get past it.
+One hook guards the supervisor's edit tools.
+It allows an edit inside the state folder and denies everything else.
+It compares paths without regard to case, and by inode, so a second spelling of a folder does not get past it.
+If the supervisor does not hold the lease, even the state folder is read-only.
 If the hook itself fails, it denies the edit.
+
+The hook covers the edit tools, not shell commands.
+That is the limit of this layer, and the reason it is not the only one.
 
 **A lease.**
 More than one supervisor session can be open, but only one may change the fleet.
@@ -164,21 +167,26 @@ Cleanup refuses to delete any work that has not landed.
 
 ## Enforced, flagged, or only asked
 
-Not every rule is a hard block, and it helps to know which is which.
+Not every rule is a hard block, and it helps to know which is which, and whom it binds.
 
-| Rule | How it holds |
-|---|---|
-| The supervisor writes only its state folder | Enforced, by a hook |
-| A builder writes only its own worktree | Enforced, by a hook |
-| Merges need my approval | Enforced, by the permission ask list |
-| No email is sent | Enforced, by the permission deny list |
-| Only the lease holder changes the fleet | Enforced, by the commands |
-| At most three tasks in flight | Enforced, by the dispatch command |
-| Unlanded work is never cleaned up | Enforced, by the cleanup command |
-| Changes to CI or agent settings get a second look | Flagged, by the watcher |
-| Spending and deletes are mine to decide | Asked, in the supervisor's rules |
+| Rule | Binds | How it holds |
+|---|---|---|
+| File edits stay inside the state folder | supervisor | Enforced, by a hook on the edit tools |
+| Merges need my approval | supervisor | Enforced, by the permission ask list |
+| No email is sent | supervisor | Enforced, by the permission deny list |
+| Only the lease holder changes the fleet | supervisor | Enforced, by the commands |
+| At most three tasks in flight | supervisor | Enforced, by the dispatch command |
+| Unlanded work is never cleaned up | supervisor | Enforced, by the cleanup command |
+| Changes to CI or agent settings get a second look | builder's pull request | Flagged, by the watcher |
+| Spending and deletes are mine to decide | supervisor | Asked, in its rules |
+| Never merge, force push, or push to the default branch | builder | Asked, in the brief |
+| Work only inside its own checkout | builder | Asked, in the brief |
 
-The last row is a contract, not a block.
+The hard blocks sit on the supervisor.
+A builder is held mostly by its brief.
+The backstop is structural: a builder's work sits on its own branch, in its own worktree, until a review is in and I merge the pull request.
+
+The rows marked asked are contracts, not blocks.
 It is more honest to say so than to call everything a guardrail.
 
 [CONFIRM: a line on what the guardrails have caught in practice, if you want one.]
@@ -187,7 +195,7 @@ It is more honest to say so than to call everything a guardrail.
 
 **The pull request is the interface.**
 Status, evidence, review, and fixes all live on it.
-Nothing depends on a session staying alive, and every decision has a record.
+The record survives a dead session, and every decision can be traced.
 
 **The reviewer is a different agent.**
 A builder does not grade its own work.
@@ -195,7 +203,7 @@ Argus reads the diff cold, and its findings are verified before they post.
 
 **The fleet is small on purpose.**
 Three builders is a number one person can still read.
-The cap is in code, so a busy day cannot talk the supervisor past it.
+The cap is in code, not in a prompt.
 
 [CONFIRM: these three are drawn from the design. Add what you would keep or change after running it, in your words.]
 
